@@ -3,333 +3,437 @@
 <title>Lyans – AI Agent</title>
 <script src="timeline.js"></script>
 <style>
+@font-face{font-family:Anton;src:url(assets/fonts/anton.woff2)}
+@font-face{font-family:JBM;src:url(assets/fonts/jetbrains-mono-latin-400-normal.woff2);font-weight:400}
+@font-face{font-family:JBM;src:url(assets/fonts/jetbrains-mono-latin-700-normal.woff2);font-weight:700}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:1080px;height:1920px;overflow:hidden;background:#05060f;font-family:Inter,"Noto Color Emoji",sans-serif;color:#fff}
-#stage{position:absolute;inset:0;overflow:hidden}
-.bg{position:absolute;inset:-100px;background:
- radial-gradient(800px 800px at 20% 18%,rgba(124,58,237,.5),transparent 60%),
- radial-gradient(800px 800px at 85% 82%,rgba(6,182,212,.4),transparent 60%),
- radial-gradient(600px 600px at 50% 50%,rgba(236,72,153,.18),transparent 60%),#05060f}
-.grid{position:absolute;inset:-200px;background-image:linear-gradient(rgba(255,255,255,.05) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.05) 2px,transparent 2px);background-size:90px 90px;animation:gridmove 5s linear infinite;transform:perspective(900px) rotateX(18deg)}
-@keyframes gridmove{to{background-position:0 90px}}
-.pt{position:absolute;border-radius:50%;background:#fff;animation:rise linear infinite}
-@keyframes rise{from{transform:translateY(0)}to{transform:translateY(-2200px)}}
-#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;mix-blend-mode:overlay}
-#vign{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.65));pointer-events:none}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#0b1020;font-family:Inter,"Noto Color Emoji",sans-serif;color:#fff}
+#stage{position:absolute;inset:0;overflow:hidden;background:#0b1020}
+.gridbg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.035) 2px,transparent 2px);background-size:60px 60px}
+.glow{position:absolute;inset:0;background:radial-gradient(900px 700px at 50% 30%,rgba(59,77,140,.35),transparent 70%)}
+.officebg{position:absolute;inset:-60px;background-size:cover;background-position:center;filter:blur(16px) brightness(.42) saturate(1.1);transform:scale(1.1)}
+canvas.px{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 
-/* header */
-.topchip{position:absolute;top:120px;left:70px;font-size:34px;font-weight:800;letter-spacing:4px;padding:14px 28px;border-radius:50px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);display:flex;gap:14px;align-items:center}
-.live{width:18px;height:18px;border-radius:50%;background:#ef4444;box-shadow:0 0 18px #ef4444;animation:blinkL 1s steps(1) infinite}
-@keyframes blinkL{50%{opacity:.25}}
+.scene{position:absolute;inset:0;opacity:0;animation:sIn .45s ease-out both,sOut .35s ease-in forwards;animation-delay:calc(var(--s)*1s),calc((var(--s) + var(--d) - .35)*1s)}
+@keyframes sIn{from{opacity:0}to{opacity:1}}
+@keyframes sOut{from{opacity:1}to{opacity:0}}
+.it{animation:pop .55s cubic-bezier(.2,.9,.3,1.3) both;animation-delay:calc((var(--s) + var(--o,.05))*1s)}
+@keyframes pop{from{opacity:0;transform:translateY(50px) scale(.9)}to{opacity:1;transform:none}}
+.it.L{animation-name:fromL}.it.R{animation-name:fromR}.it.Z{animation-name:zoomIn}.it.D{animation-name:drop}.it.F{animation-name:fade}
+@keyframes fromL{from{opacity:0;transform:translateX(-120%)}to{opacity:1;transform:none}}
+@keyframes fromR{from{opacity:0;transform:translateX(120%)}to{opacity:1;transform:none}}
+@keyframes zoomIn{from{opacity:0;transform:scale(1.8)}to{opacity:1;transform:none}}
+@keyframes drop{0%{opacity:0;transform:translateY(-300px) rotate(-8deg)}70%{opacity:1;transform:translateY(16px)}100%{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
 
-/* scenes */
-.scene{position:absolute;inset:0;opacity:0;animation:sIn .6s cubic-bezier(.2,.8,.2,1) both,sOut .4s ease-in forwards;animation-delay:calc(var(--s)*1s),calc((var(--s) + var(--d) - .4)*1s)}
-@keyframes sIn{from{opacity:0;transform:translateY(80px) scale(1.08);filter:blur(14px)}to{opacity:1;transform:none;filter:none}}
-@keyframes sOut{from{opacity:1}to{opacity:0;transform:translateY(-60px) scale(.94);filter:blur(10px)}}
-.cam{position:absolute;inset:0}
-.wrap{position:absolute;left:70px;right:70px;top:330px;bottom:430px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.it{animation:pop .7s cubic-bezier(.2,.9,.3,1.35) both;animation-delay:calc((var(--s) + var(--o,.1))*1s)}
-@keyframes pop{from{opacity:0;transform:translateY(70px) scale(.85)}to{opacity:1;transform:none}}
-.it.fromL{animation-name:fromL}.it.fromR{animation-name:fromR}.it.zoom{animation-name:zoom}.it.drop{animation-name:drop}.it.flip{animation-name:flip;animation-duration:.9s}.it.stamp{animation-name:stamp;animation-duration:.5s}
-@keyframes fromL{from{opacity:0;transform:translateX(-700px) rotate(-6deg)}to{opacity:1;transform:none}}
-@keyframes fromR{from{opacity:0;transform:translateX(700px) rotate(6deg)}to{opacity:1;transform:none}}
-@keyframes zoom{from{opacity:0;transform:scale(2.6);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
-@keyframes drop{0%{opacity:0;transform:translateY(-500px)}60%{opacity:1;transform:translateY(30px)}80%{transform:translateY(-12px)}100%{transform:none}}
-@keyframes flip{from{opacity:0;transform:perspective(900px) rotateX(-95deg)}to{opacity:1;transform:none}}
-@keyframes stamp{0%{opacity:0;transform:scale(3) rotate(-25deg)}70%{opacity:1;transform:scale(.9) rotate(-8deg)}100%{opacity:1;transform:rotate(-8deg)}}
+.title{position:absolute;left:60px;font-family:Anton;font-size:150px;line-height:.98;text-transform:uppercase;letter-spacing:1px;text-shadow:0 6px 0 rgba(0,0,0,.35)}
+.title .y{color:#facc15}
+.ytag{display:inline-block;background:#facc15;color:#111;font:700 26px JBM;padding:6px 16px;border-radius:8px;letter-spacing:1px;text-transform:uppercase}
+.wtag{display:inline-block;background:#f8fafc;color:#111;font:700 24px JBM;padding:6px 14px;border-radius:8px;letter-spacing:1px;text-transform:uppercase}
 
-.tag{display:inline-block;font-size:38px;font-weight:800;letter-spacing:6px;text-transform:uppercase;color:#67e8f9;background:rgba(103,232,249,.1);border:2px solid rgba(103,232,249,.45);padding:14px 34px;border-radius:60px}
-.big{font-size:240px;font-weight:900;letter-spacing:-6px;line-height:1;background:linear-gradient(90deg,#a78bfa,#22d3ee,#f472b6,#a78bfa);background-size:300% 100%;-webkit-background-clip:text;color:transparent;animation:zoom .8s cubic-bezier(.2,.9,.3,1.2) both,shine 3s linear infinite;animation-delay:calc((var(--s) + var(--o))*1s),0s;filter:drop-shadow(0 0 40px rgba(167,139,250,.6))}
-@keyframes shine{to{background-position:300% 0}}
-h1{font-size:92px;font-weight:900;line-height:1.05;letter-spacing:-2px}
-h2{font-size:70px;font-weight:900;line-height:1.1}
-.lead{font-size:50px;font-weight:600;color:#e2e8f0;line-height:1.3}
-.grad{background:linear-gradient(90deg,#a78bfa,#22d3ee);-webkit-background-clip:text;color:transparent}
-.gold{background:linear-gradient(90deg,#fde68a,#f59e0b,#fde68a);background-size:200% 100%;-webkit-background-clip:text;color:transparent;animation:shine 2.5s linear infinite}
+/* windows (UI mockup) */
+.win{position:absolute;background:#0e1424;border:2px solid #27314d;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.55);overflow:hidden}
+.win .bar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:2px solid #1d2540;font:400 22px JBM;color:#7c86a8}
+.win .bar i{width:14px;height:14px;border-radius:50%;background:#ef4444}.win .bar i:nth-child(2){background:#f59e0b}.win .bar i:nth-child(3){background:#22c55e;margin-right:10px}
+.win .body{padding:22px 24px}
+.msg{max-width:78%;padding:14px 20px;border-radius:20px;font-size:32px;line-height:1.3;margin-bottom:14px}
+.msg.in{background:#1f2937;border-top-left-radius:6px}
+.msg.out{background:#166534;margin-left:auto;border-top-right-radius:6px}
+.who{font:700 20px JBM;color:#7c86a8;margin-bottom:6px}
+.row{display:flex;align-items:center;gap:16px;font-size:30px;padding:14px 4px;border-bottom:2px solid #1a2238}
+.row:last-child{border-bottom:0}
+.pill{margin-left:auto;font:700 22px JBM;padding:6px 14px;border-radius:30px;background:#1e293b;color:#94a3b8}
+.pill.g{background:#14532d;color:#86efac}.pill.o{background:#7c2d12;color:#fdba74}.pill.b{background:#1e3a8a;color:#93c5fd}
+.notif{display:flex;gap:18px;align-items:center;font-size:32px;line-height:1.3}
+.notif .ic{font-size:60px}
+.term{font:400 27px/1.55 JBM;color:#cbd5e1;white-space:pre-wrap}
+.term .k{color:#facc15;font-weight:700}.term .r{color:#f87171}.term .g{color:#4ade80}.term .c{color:#67e8f9}
 
-/* avatar */
-#ava{position:absolute;left:0;top:0;width:400px;height:470px;transform-origin:50% 50%;z-index:20}
-#ava svg{width:100%;height:100%;overflow:visible}
-#avaWaves{position:absolute;left:50%;top:44%;width:0;height:0}
-#avaWaves i{position:absolute;left:-230px;top:-230px;width:460px;height:460px;border-radius:50%;border:6px solid rgba(34,211,238,.7);opacity:0}
+/* characters */
+.char{position:absolute;transform-origin:50% 100%}
+.nametag{position:absolute;z-index:6}
 
 /* captions */
-#cap{position:absolute;left:60px;right:60px;top:1500px;height:260px;display:flex;align-items:center;justify-content:center;z-index:30}
-#capIn{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;padding:20px 34px;border-radius:30px;background:rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.1);max-width:960px}
-#capIn span{font-size:60px;font-weight:900;line-height:1.15;text-shadow:0 4px 0 #000,0 0 18px rgba(0,0,0,.8);display:inline-block}
-#capIn span.on{color:#facc15}
-.bar{position:absolute;left:0;bottom:0;height:14px;width:100%;background:linear-gradient(90deg,#7c3aed,#22d3ee,#f472b6);transform-origin:left;z-index:40}
+#cap{position:absolute;left:0;right:0;display:flex;justify-content:center;z-index:30;pointer-events:none}
+#capIn{background:rgba(8,11,24,.78);border-radius:18px;padding:12px 26px;font-size:62px;font-weight:800;letter-spacing:-.5px;text-shadow:0 3px 0 rgba(0,0,0,.6);white-space:nowrap}
+#capIn b{color:#facc15;font-weight:800}
+.aigen{position:absolute;left:30px;bottom:26px;font-size:24px;color:rgba(255,255,255,.45);z-index:31}
+.prog{position:absolute;left:0;bottom:0;height:8px;background:#facc15;z-index:32;transform-origin:left}
 
-/* born */
-.cal{width:380px;border-radius:40px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(124,58,237,.5);background:#fff;color:#111}
-.cal .m{background:linear-gradient(90deg,#7c3aed,#06b6d4);color:#fff;font-size:46px;font-weight:900;padding:18px;letter-spacing:6px}
-.cal .d{font-size:200px;font-weight:900;line-height:1;padding:10px 0 0}
-.cal .y{font-size:40px;font-weight:800;color:#64748b;padding-bottom:20px}
-.photo{position:relative;width:900px;height:496px;border-radius:40px;overflow:hidden;border:5px solid rgba(167,139,250,.9);box-shadow:0 0 80px rgba(124,58,237,.7)}
-.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.scan{position:absolute;left:0;right:0;height:120px;background:linear-gradient(transparent,rgba(34,211,238,.45),transparent);animation:scan 2.2s ease-in-out infinite alternate}
-@keyframes scan{from{top:-120px}to{top:100%}}
-.hud{position:absolute;width:70px;height:70px;border:6px solid #22d3ee}
-.hud.a{left:20px;top:20px;border-right:0;border-bottom:0}.hud.b{right:20px;top:20px;border-left:0;border-bottom:0}.hud.c{left:20px;bottom:20px;border-right:0;border-top:0}.hud.d{right:20px;bottom:20px;border-left:0;border-top:0}
-.badge{position:absolute;right:30px;bottom:30px;font-size:34px;font-weight:900;padding:10px 24px;border-radius:14px;background:#22c55e;color:#04210f;letter-spacing:2px}
-.kb{animation:kb 9s ease-in-out both;animation-delay:calc(var(--s)*1s)}
-@keyframes kb{from{transform:scale(1.05) translate(4%,2%)}to{transform:scale(1.5) translate(-14%,4%)}}
-
-/* builder */
-.bgphoto{position:absolute;inset:-80px;background:url(assets/aditya.jpg) center/cover;filter:blur(30px) brightness(.45) saturate(1.4);animation:kb2 9s linear both;animation-delay:calc(var(--s)*1s)}
-@keyframes kb2{from{transform:scale(1.1)}to{transform:scale(1.35)}}
-.chips{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;max-width:940px}
-.chip{font-size:44px;font-weight:800;padding:16px 30px;border-radius:50px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25)}
-
-/* tree */
-.tree{position:absolute;left:0;top:0;width:1080px;height:1920px}
-.tree svg{position:absolute;inset:0}
-.tree line{stroke:rgba(255,255,255,.4);stroke-width:6;stroke-dasharray:16 12;animation:dash 1s linear infinite}
-@keyframes dash{to{stroke-dashoffset:-28}}
-.tree line.it{animation:fadeL .6s both,dash 1s linear infinite;animation-delay:calc((var(--s) + var(--o,.1))*1s),0s}
-@keyframes fadeL{from{opacity:0}to{opacity:1}}
-.node{position:absolute;width:0;height:0}
-.node .in{position:absolute;left:-110px;top:-110px;width:220px;display:flex;flex-direction:column;align-items:center;gap:10px}
-.node .c{width:200px;height:200px;border-radius:50%;display:grid;place-items:center;font-size:104px;background:rgba(10,10,30,.8);border:6px solid var(--c);box-shadow:0 0 60px var(--c),inset 0 0 40px var(--c)}
-.node b{font-size:42px;font-weight:900;text-shadow:0 3px 0 #000}
-.coreRing{position:absolute;left:540px;top:1030px;width:0;height:0}
-.coreRing i{position:absolute;left:-190px;top:-190px;width:380px;height:380px;border-radius:50%;border:5px dashed rgba(167,139,250,.8);animation:spin 10s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.dot{position:absolute;width:26px;height:26px;margin:-13px;border-radius:50%;background:#fff;box-shadow:0 0 24px #fff,0 0 50px var(--c)}
-
-/* business */
-.bhead{display:flex;align-items:center;gap:30px;margin-bottom:26px}
-.bhead .emo{font-size:130px;line-height:1;animation:bob 1.6s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(-14px) rotate(-6deg)}}
-.bhead h2{color:var(--c);text-shadow:0 0 30px var(--c)}
-.agent{display:flex;gap:30px;align-items:center;width:940px;text-align:left;background:rgba(15,18,40,.75);border:3px solid rgba(255,255,255,.12);border-left:14px solid var(--c);border-radius:34px;padding:26px 34px;margin-top:22px;position:relative}
-.agent .ic{font-size:84px;flex:none;width:120px;height:120px;display:grid;place-items:center;border-radius:28px;background:rgba(255,255,255,.08)}
-.agent b{display:block;font-size:46px;font-weight:900;margin-bottom:6px}
-.agent span{font-size:34px;color:#cbd5e1;line-height:1.3}
-.agent .st{position:absolute;right:26px;top:22px;font-size:24px;font-weight:900;letter-spacing:2px;color:#22c55e;display:flex;gap:8px;align-items:center}
-.agent .st:before{content:"";width:14px;height:14px;border-radius:50%;background:#22c55e;box-shadow:0 0 12px #22c55e}
-.flow{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:34px;padding:22px 30px;border-radius:30px;background:rgba(0,0,0,.4);border:2px dashed rgba(255,255,255,.22)}
-.flow .f{font-size:62px;width:104px;height:104px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.07);border:4px solid rgba(255,255,255,.15)}
-.flow .ar{font-size:40px;color:#64748b;font-weight:900}
-.flow .lbl{font-size:30px;color:#94a3b8;font-weight:700;margin-left:12px;text-align:left;max-width:260px;line-height:1.25}
-
-/* projects */
-.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:28px;width:940px;margin-top:34px}
-.pc{border-radius:36px;padding:30px;background:rgba(15,18,40,.8);border:3px solid rgba(255,255,255,.14);display:flex;flex-direction:column;align-items:center;gap:14px;height:330px;justify-content:center;position:relative;overflow:hidden}
-.pc .pi{width:150px;height:150px;border-radius:34px;display:grid;place-items:center;font-size:96px}
-.pc b{font-size:40px;font-weight:900;line-height:1.1}
-.pc span{font-size:28px;color:#94a3b8;font-weight:600}
-.pc img{width:150px;height:150px;border-radius:34px;animation:bob 1.2s ease-in-out infinite}
-.gear{animation:spin 4s linear infinite;display:inline-block;font-family:'Noto Color Emoji';font-size:96px;line-height:1}
-.claude{font-size:56px;font-weight:900;display:flex;gap:16px;align-items:center;justify-content:center}
-.claude .star{color:#d97757;font-size:80px;display:inline-block;animation:spin 6s linear infinite}
-
-/* how */
-.step{display:flex;align-items:center;gap:30px;width:900px;text-align:left;background:rgba(15,18,40,.8);border-radius:32px;padding:24px 34px;border:3px solid rgba(255,255,255,.12)}
-.step .n{flex:none;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:50px;font-weight:900;background:linear-gradient(135deg,#7c3aed,#06b6d4)}
-.step span{font-size:46px;font-weight:700}
-.step em{font-style:normal;font-size:70px;margin-left:auto}
-.arrow{font-size:46px;color:#67e8f9;height:56px;line-height:56px}
-
-/* outro */
-.follow{margin-top:34px;font-size:52px;font-weight:900;padding:26px 60px;border-radius:70px;background:linear-gradient(90deg,#ef4444,#ec4899);box-shadow:0 0 60px rgba(236,72,153,.7);position:relative}
-.hand{position:absolute;right:-50px;bottom:-70px;font-size:100px;animation:tap 1s ease-in-out infinite}
-@keyframes tap{50%{transform:translate(-14px,-14px) scale(.9)}}
-.byline{display:flex;align-items:center;gap:22px;margin-top:34px;font-size:36px;font-weight:700;color:#cbd5e1}
-.byline img{width:110px;height:110px;border-radius:50%;object-fit:cover;object-position:78% 30%;border:4px solid #facc15;box-shadow:0 0 30px rgba(250,204,21,.6)}
+/* misc */
+.chip{display:flex;align-items:center;gap:20px;background:#0e1424;border:3px solid #27314d;border-radius:26px;padding:18px 26px;font-size:42px;font-weight:800}
+.chip canvas{flex:none}
+.acard{position:absolute;left:50px;right:50px;height:290px;display:flex;align-items:center;gap:28px;background:#0e1424;border:3px solid #27314d;border-radius:30px;padding:0 30px;overflow:hidden}
+.acard .nm{font-family:Anton;font-size:64px;line-height:1;text-transform:uppercase}
+.acard .ds{font-size:33px;color:#cbd5e1;line-height:1.3;margin-top:10px}
+.acard .tg{font:700 22px JBM;color:#94a3b8;margin-top:12px}
+.acard .live{position:absolute;right:26px;top:22px;font:700 20px JBM;color:#4ade80}
+.sticky{position:absolute;width:190px;height:150px;background:#fde047;color:#422006;font:700 26px JBM;padding:14px;box-shadow:0 10px 20px rgba(0,0,0,.4);border-radius:4px}
+.barbg{height:22px;border-radius:12px;background:#1e293b;overflow:hidden}
+.barfill{height:100%;background:linear-gradient(90deg,#facc15,#f97316);width:0}
+.vbar{position:absolute;bottom:0;width:60px;background:linear-gradient(#facc15,#f97316);border-radius:8px 8px 0 0}
+.ticker{position:absolute;left:0;right:0;height:80px;background:#0e1424;border-top:2px solid #27314d;border-bottom:2px solid #27314d;overflow:hidden;font:700 34px/80px JBM;white-space:nowrap}
+.ticker div{position:absolute;left:0;top:0}
+.up{color:#4ade80}.dn{color:#f87171}
+.follow{display:inline-flex;align-items:center;gap:16px;font-size:48px;font-weight:900;padding:22px 52px;border-radius:60px;background:#facc15;color:#111}
 </style></head><body>
 <div id="stage">
- <div class="bg" id="bg"></div><div class="grid"></div>
- <div id="pts"></div>
- <div class="topchip"><span class="live"></span>LYANS<span style="color:#67e8f9">.AI</span></div>
+ <div class="gridbg"></div><div class="glow"></div>
 
  <!-- 1 HOOK -->
- <section class="scene" data-scene="hook"><div class="cam">
-  <div class="wrap" style="top:1000px;bottom:420px;justify-content:flex-start">
-   <div class="lead it" data-seg="0">Halo semuanya! 👋</div>
-   <div class="big" data-seg="1" style="margin-top:6px">LYANS</div>
-   <div class="tag it zoom" data-seg="2" style="margin-top:12px">🤖 AI Agent Utama</div>
-  </div></div></section>
+ <section class="scene" data-scene="hook"><div class="officebg"></div>
+  <div class="title it Z" data-seg="0" style="top:200px;left:0;right:0;text-align:center;font-size:300px">LYANS</div>
+  <div class="it" data-seg="1" style="position:absolute;top:530px;left:0;right:0;text-align:center"><span class="ytag" style="font-size:34px">AI AGENT · MARKAS BOS ADITYA</span></div>
+ </section>
 
  <!-- 2 BORN -->
- <section class="scene" data-scene="born"><div class="cam"><div class="wrap" style="justify-content:flex-start;top:300px">
-   <div style="display:flex;gap:40px;align-items:center">
-    <div class="cal it flip" data-seg="0"><div class="m">OKTOBER</div><div class="d">25</div><div class="y">2026</div></div>
-    <div style="text-align:left"><div class="tag it" data-seg="0" style="--x:.2">📅 Hari Lahir</div><div class="lead it" data-seg="0" style="margin-top:20px;font-size:46px">Lahirnya<br><b class="grad" style="font-size:64px">LYANS 🤖</b></div></div>
-   </div>
-   <div class="lead it" data-seg="1" style="margin-top:40px">Diciptakan oleh</div>
-   <div class="photo it zoom" data-seg="1" style="margin-top:20px"><img class="kb" src="assets/aditya.jpg"><div class="scan"></div><i class="hud a"></i><i class="hud b"></i><i class="hud c"></i><i class="hud d"></i>
-     <div class="badge it stamp" data-seg="2">✓ CREATOR</div></div>
-  </div></div></section>
-
- <!-- 3 BUILDER -->
- <section class="scene" data-scene="builder"><div class="bgphoto"></div><div class="cam"><div class="wrap">
-   <div class="it drop" data-seg="0" style="font-size:44px;font-weight:800;color:#facc15">👑 THE BOSS</div>
-   <h1 class="it" data-seg="0" style="margin-top:14px">Aditya Edwin<br><span class="gold">Brilliansyah</span></h1>
-   <div class="photo it zoom" data-seg="0" style="margin-top:36px;width:820px;height:452px;border-color:#facc15;box-shadow:0 0 80px rgba(250,204,21,.5)"><img src="assets/aditya.jpg" style="animation:kb 8s ease-in-out both;animation-delay:calc(var(--s)*1s)"></div>
-   <div class="chips" style="margin-top:36px">
-    <div class="chip it fromL" data-seg="1">🧺 Laundry</div><div class="chip it fromR" data-seg="1" style="--x:.15">🏠 Kos</div><div class="chip it fromL" data-seg="1" style="--x:.3">🍜 FnB</div><div class="chip it zoom" data-seg="1" style="--x:.6;background:linear-gradient(90deg,#7c3aed,#ec4899)">🚀 Web3</div>
-   </div>
-  </div></div></section>
-
- <!-- 4 TREE -->
- <section class="scene" data-scene="tree"><div class="cam">
-  <div class="wrap" style="top:280px;bottom:auto;height:260px"><div class="tag it" data-seg="0">⏱️ Baru 1 Minggu</div><h1 class="it" data-seg="0" style="margin-top:20px;font-size:80px">Lahir <span class="grad">banyak agen</span> baru!</h1></div>
-  <div class="tree" id="tree"><svg id="treeSvg" viewBox="0 0 1080 1920"></svg><div class="coreRing"><i></i></div></div>
- </div></section>
-
- <!-- business scenes injected here -->
- <div id="biz"></div>
-
- <!-- PROJECTS -->
- <section class="scene" data-scene="projects"><div class="cam"><div class="wrap">
-   <div class="claude it zoom" data-seg="0"><span class="star">✳</span><span>Built with <span style="color:#d97757">Claude</span></span></div>
-   <div class="lead it" data-seg="0" style="font-size:40px;margin-top:10px;color:#94a3b8">Project yang sudah dibuat 🛠️</div>
-   <div class="pgrid">
-    <div class="pc it fromL" data-seg="1" style="border-color:#facc15"><img src="assets/pip.png"><b>Pip Sing-Along</b><span>Channel YouTube lagu anak 🎵</span></div>
-    <div class="pc it fromR" data-seg="2" style="border-color:#ef4444"><div class="pi" style="background:rgba(239,68,68,.15)">📤</div><b>Pip Kids Uploader</b><span>Auto-upload via YouTube API</span></div>
-    <div class="pc it fromL" data-seg="3" style="border-color:#22d3ee"><div class="pi" style="background:rgba(34,211,238,.15)"><span class="gear">⚙️</span></div><b>CLS Engine</b><span>Engine &amp; deployment</span></div>
-    <div class="pc it fromR" data-seg="4" style="border-color:#a78bfa"><div class="pi" style="background:rgba(167,139,250,.15)">🎬</div><b>Video Lyans</b><span>Yang kamu tonton ini! 😎</span></div>
-   </div>
-  </div></div></section>
-
- <!-- HOW -->
- <section class="scene" data-scene="how"><div class="cam"><div class="wrap" style="justify-content:flex-start;top:320px">
-   <div class="tag it" data-seg="0">🧠 Cara Kerja Lyans</div>
-   <div style="margin-top:34px;display:flex;flex-direction:column;align-items:center" id="steps">
-    <div class="step it fromL" data-seg="1"><div class="n">1</div><span>Pesan masuk</span><em>📩</em></div><div class="arrow it" data-seg="2">▼</div>
-    <div class="step it fromR" data-seg="2"><div class="n">2</div><span>Lyans memahami</span><em>🧠</em></div><div class="arrow it" data-seg="3">▼</div>
-    <div class="step it fromL" data-seg="3"><div class="n">3</div><span>Kirim ke agen tepat</span><em>⚡</em></div><div class="arrow it" data-seg="4">▼</div>
-    <div class="step it fromR" data-seg="4"><div class="n">4</div><span>Lapor ke Bos Aditya</span><em>👑</em></div>
-   </div>
-  </div></div></section>
-
- <!-- OUTRO -->
- <section class="scene" data-scene="outro"><div class="cam"><div class="wrap" style="top:860px;bottom:430px;justify-content:flex-start">
-   <h1 class="it zoom" data-seg="0" style="font-size:80px">1 Otak. <span class="grad">Banyak Agen.</span><br>Kerja Nonstop 🚀</h1>
-   <div class="follow it drop" data-seg="1">➕ FOLLOW<span class="hand">👆</span></div>
-   <div class="byline it" data-seg="0" style="--x:.8"><img src="assets/aditya.jpg"><div style="text-align:left">Created by<br><b style="color:#facc15">Aditya Edwin Brilliansyah</b></div></div>
+ <section class="scene" data-scene="born"><div class="officebg"></div>
+  <div class="win it L" data-seg="0" style="left:50px;right:50px;top:150px">
+   <div class="bar"><i></i><i></i><i></i>lyans.ai · profil agent</div>
+   <div class="body" style="display:flex;gap:30px;align-items:center">
+    <div style="flex:none;width:200px;height:200px;border-radius:24px;background:#1e1b4b;display:grid;place-items:center;overflow:hidden"><canvas class="px" id="profAva" width="72" height="80" style="width:216px;height:240px;margin-top:40px"></canvas></div>
+    <div style="font:400 30px/1.6 JBM;color:#94a3b8">nama&nbsp;&nbsp;&nbsp;: <b style="color:#fff">LYANS</b><br>lahir&nbsp;&nbsp;: <b style="color:#facc15">25 Oktober 2026</b><br>peran&nbsp;&nbsp;: <b style="color:#fff">AI Agent Utama</b><br>status : <b style="color:#4ade80">● online 24/7</b></div>
+   </div></div>
+  <div class="it Z" data-seg="1" style="position:absolute;left:90px;right:90px;top:560px;height:496px;border-radius:26px;overflow:hidden;border:4px solid #facc15;box-shadow:0 0 60px rgba(250,204,21,.35)">
+   <canvas class="px" id="bossPx" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+   <img id="bossReal" src="assets/aditya.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 100% 0 0)">
+   <div id="bossScan" style="position:absolute;top:0;bottom:0;width:10px;background:#facc15;box-shadow:0 0 30px #facc15;left:-20px"></div>
+   <div style="position:absolute;left:20px;top:20px"><span class="ytag">pencipta</span></div>
   </div>
-  <div class="wrap" style="top:auto;bottom:240px;height:0;overflow:visible"></div>
- </div></section>
+  <div class="it" data-seg="2" style="position:absolute;left:90px;top:1080px"><span class="wtag" style="font-size:30px">👑 ADITYA EDWIN BRILLIANSYAH</span></div>
+ </section>
 
- <!-- AVATAR -->
- <div id="ava"><div id="avaWaves"><i></i><i></i><i></i></div>
- <svg viewBox="0 0 400 470">
-  <defs>
-   <linearGradient id="gH" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
-   <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d28d9"/><stop offset="1" stop-color="#0e7490"/></linearGradient>
-   <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <g id="aBody">
-   <g id="armL" transform="translate(95 360)"><rect x="-22" y="-10" width="30" height="90" rx="15" fill="url(#gB)" transform="rotate(25)"/></g>
-   <g id="armR" transform="translate(305 360)"><g id="armRr"><rect x="-8" y="-10" width="30" height="90" rx="15" fill="url(#gB)" transform="rotate(-25)"/><circle cx="18" cy="88" r="20" fill="#22d3ee" transform="rotate(-25)"/></g></g>
-   <rect x="110" y="320" width="180" height="130" rx="50" fill="url(#gB)"/>
-   <circle id="core" cx="200" cy="385" r="26" fill="#22d3ee" filter="url(#glow)"/>
-  </g>
-  <g id="aHead">
-   <line x1="200" y1="60" x2="200" y2="20" stroke="#a78bfa" stroke-width="8" stroke-linecap="round"/>
-   <circle id="ant" cx="200" cy="16" r="16" fill="#f472b6" filter="url(#glow)"/>
-   <rect x="40" y="60" width="320" height="260" rx="90" fill="url(#gH)"/>
-   <rect x="64" y="86" width="272" height="208" rx="70" fill="#0b1020"/>
-   <rect x="22" y="160" width="26" height="70" rx="12" fill="#7c3aed"/><rect x="352" y="160" width="26" height="70" rx="12" fill="#7c3aed"/>
-   <g id="eyes" filter="url(#glow)">
-    <rect id="eL" x="118" y="140" width="46" height="62" rx="23" fill="#67e8f9"/>
-    <rect id="eR" x="236" y="140" width="46" height="62" rx="23" fill="#67e8f9"/>
-   </g>
-   <circle cx="110" cy="235" r="16" fill="#f472b6" opacity=".55"/><circle cx="290" cy="235" r="16" fill="#f472b6" opacity=".55"/>
-   <rect id="mouth" x="170" y="236" width="60" height="12" rx="6" fill="#67e8f9" filter="url(#glow)"/>
-  </g>
- </svg></div>
+ <!-- 3 OFFICE -->
+ <section class="scene" data-scene="office">
+  <div class="title it" data-seg="0" style="top:110px;font-size:130px">KANTOR <span class="y">GUE</span></div>
+  <div style="position:absolute;left:0;top:290px;width:1080px;height:960px">
+   <canvas class="px" id="office" width="108" height="96" style="width:1080px;height:960px"></canvas>
+   <div id="officeTags"></div>
+  </div>
+ </section>
 
- <div id="flash"></div><div id="vign"></div>
+ <!-- 4 DIVISI -->
+ <section class="scene" data-scene="divisi"><div class="officebg"></div>
+  <div class="title it" data-seg="0" style="top:110px;font-size:130px">DIVISI <span class="y">GUE</span></div>
+  <div id="divChips" style="position:absolute;left:470px;right:40px;top:310px;display:flex;flex-direction:column;gap:18px"></div>
+ </section>
+
+ <!-- 5 LAUNDRY -->
+ <section class="scene" data-scene="laundry">
+  <div class="title it" data-seg="0" style="top:90px;font-size:110px">DIVISI <span class="y">LAUNDRY</span></div>
+  <div class="win it L" data-seg="0" style="left:50px;right:50px;top:240px">
+   <div class="bar"><i></i><i></i><i></i>whatsapp · laundry bos (contoh)</div>
+   <div class="body"><div class="who">Pelanggan</div><div class="msg in">Kak, mau laundry 5 kg. Bisa dijemput? 🙏</div>
+    <div class="msg out" data-type="0" data-full="Bisa kak! 5 kg × Rp7.000 = Rp35.000. Kurir jemput jam 10 ya 🛵"></div></div></div>
+  <div class="win it R" data-seg="1" style="left:120px;right:50px;top:640px">
+   <div class="bar"><i></i><i></i><i></i>kurir · jadwal hari ini</div>
+   <div class="body" style="padding:6px 24px"><div class="row">🛵 Jemput · Jl. Melati 12<span class="pill b">10:00</span></div><div class="row">🛵 Antar · Kos Mawar<span class="pill g">13:30</span></div></div></div>
+  <div class="win it D" data-seg="2" style="left:50px;right:160px;top:930px">
+   <div class="body notif"><span class="ic">✅</span><div><b>Cucian Kak Rina sudah beres!</b><br><span style="color:#94a3b8;font-size:28px">Notifikasi terkirim ke WhatsApp</span></div></div></div>
+ </section>
+
+ <!-- 6 KOS -->
+ <section class="scene" data-scene="kos">
+  <div class="title it" data-seg="0" style="top:90px;font-size:110px">DIVISI <span class="y">KOS-KOSAN</span></div>
+  <div class="win it L" data-seg="0" style="left:50px;right:50px;top:240px">
+   <div class="bar"><i></i><i></i><i></i>whatsapp · kos bos (contoh)</div>
+   <div class="body"><div class="who">Calon penghuni</div><div class="msg in">Kak, masih ada kamar kosong?</div>
+    <div class="msg out" data-type="0" data-full="Ada 2 kamar kak 🏠 Rp1,2 jt/bulan, sudah AC + WiFi. Mau survei kapan?"></div></div></div>
+  <div class="win it R" data-seg="1" style="left:120px;right:50px;top:640px">
+   <div class="bar"><i></i><i></i><i></i>tagihan · november</div>
+   <div class="body" style="padding:6px 24px"><div class="row">Kamar 1<span class="pill g">LUNAS ✓</span></div><div class="row">Kamar 3<span class="pill o">⏰ PENGINGAT TERKIRIM</span></div><div class="row">Kamar 5<span class="pill g">LUNAS ✓</span></div></div></div>
+  <div class="win it D" data-seg="2" style="left:50px;right:160px;top:1010px">
+   <div class="body notif"><span class="ic">🛠️</span><div><b>Tiket #07 · AC kamar 5 bocor</b><br><span style="color:#94a3b8;font-size:28px">Teknisi dijadwalkan besok 09:00</span></div></div></div>
+ </section>
+
+ <!-- 7 FNB -->
+ <section class="scene" data-scene="fnb">
+  <div class="title it" data-seg="0" style="top:90px;font-size:110px">DIVISI <span class="y">FNB</span></div>
+  <div class="win it L" data-seg="0" style="left:50px;right:50px;top:240px">
+   <div class="bar"><i></i><i></i><i></i>order #128 → dapur</div>
+   <div class="body" style="padding:6px 24px"><div class="row">🍜 2× Mie Goreng Spesial</div><div class="row">🧋 1× Es Teh Manis<span class="pill o">🔥 DIMASAK</span></div></div></div>
+  <div class="win it R" data-seg="1" style="left:120px;right:50px;top:540px">
+   <div class="body notif"><span class="ic">⚠️</span><div><b>Stok telur sisa 12 butir</b><br><span style="color:#94a3b8;font-size:28px">Saran: restock sebelum jam 17.00</span></div></div></div>
+  <div class="win it D" data-seg="2" style="left:50px;right:50px;top:760px">
+   <div class="bar"><i></i><i></i><i></i>laporan harian · 21:00</div>
+   <div class="body" style="display:flex;gap:30px;align-items:flex-end">
+    <div style="font-size:30px;line-height:1.5">Omzet <b style="font-size:46px">Rp4.250.000</b> <span class="up">▲12%</span><br>Terlaris: <b>Mie Goreng (38)</b></div>
+    <div id="fnbBars" style="position:relative;flex:1;height:170px"></div></div></div>
+ </section>
+
+ <!-- 8 WEB3 -->
+ <section class="scene" data-scene="web3"><div class="officebg"></div>
+  <div class="title it Z" data-seg="0" style="top:150px;font-size:170px">DIVISI WEB3<br><span class="y">PALING SIBUK</span></div>
+  <div class="ticker it F" data-seg="0" style="top:560px"><div id="tick"></div></div>
+  <div class="it" data-seg="1" style="position:absolute;left:60px;top:690px;display:flex;gap:14px"><span class="ytag">6 agen</span><span class="wtag">online 24 jam</span></div>
+ </section>
+
+ <!-- 9/10 WEB3 AGENTS -->
+ <section class="scene" data-scene="web3a"><div class="title it" data-seg="0" style="top:80px;font-size:100px">TIM <span class="y">WEB3</span> <span style="font-size:60px;color:#64748b">1/2</span></div><div class="cards"></div></section>
+ <section class="scene" data-scene="web3b"><div class="title it" data-seg="0" style="top:80px;font-size:100px">TIM <span class="y">WEB3</span> <span style="font-size:60px;color:#64748b">2/2</span></div><div class="cards"></div></section>
+
+ <!-- 11 WEB3 FLOW -->
+ <section class="scene" data-scene="web3flow">
+  <div class="title it" data-seg="0" style="top:80px;font-size:100px">CARA <span class="y">KERJANYA</span></div>
+  <div class="win it L" data-seg="0" style="left:40px;right:40px;top:220px">
+   <div class="bar"><i></i><i></i><i></i>lyans · web3 log (demo)</div>
+   <div class="body term" id="term">
+<div data-type="0" data-full="[whale] 🐋 2.000.000 USDT → exchange&#10;        dari 0x7a3f…c91e"></div><div data-type="1" data-full="[radar] dampak: BTC ▼0,8% · volume ▲34%"></div><div data-type="2" data-full="[riset] pola: whale ini sering jual&#10;        setelah harga naik"></div><div data-type="3" data-full="[lyans] ringkasan → Telegram Bos ✓"></div></div></div>
+  <div class="win it D" data-seg="3" style="left:150px;right:40px;top:800px;--x:.5">
+   <div class="bar"><i></i><i></i><i></i>telegram · lyans bot</div>
+   <div class="body" style="font-size:32px;line-height:1.4"><b class="r" style="color:#f87171">⚠️ WHALE ALERT</b><br>2 jt USDT masuk exchange.<br>Potensi tekanan jual BTC.<br><span style="color:#facc15">Keputusan: di tangan Bos 👑</span></div></div>
+ </section>
+
+ <!-- 12 WEB3 SAFE -->
+ <section class="scene" data-scene="web3safe">
+  <div class="title it" data-seg="0" style="top:90px;font-size:120px">KEPUTUSAN<br><span class="y">TETAP DI BOS</span></div>
+  <div class="it Z" data-seg="1" style="position:absolute;left:90px;right:90px;top:400px;height:496px;border-radius:26px;overflow:hidden;border:4px solid #facc15">
+   <img src="assets/aditya.jpg" style="width:100%;height:100%;object-fit:cover" class="kb"><div style="position:absolute;left:20px;top:20px"><span class="ytag">👑 bos aditya</span></div></div>
+  <div class="it" data-seg="2" style="position:absolute;left:90px;top:930px;display:flex;gap:14px"><span class="wtag">🤖 agen: kasih info</span><span class="ytag">👑 bos: ambil keputusan</span></div>
+ </section>
+
+ <!-- 13 YOUTUBE -->
+ <section class="scene" data-scene="youtube">
+  <div class="title it" data-seg="0" style="top:90px;font-size:110px">DIVISI <span class="y">YOUTUBE</span></div>
+  <div id="stickies" style="position:absolute;left:40px;right:40px;top:250px;height:360px"></div>
+  <div class="win it R" data-seg="1" style="left:50px;right:50px;top:640px">
+   <div class="bar"><i></i><i></i><i></i>upload · video baru</div>
+   <div class="body"><div style="font-size:30px;margin-bottom:14px">🎬 Judul &amp; deskripsi siap · jadwal <b>Jumat 19.00</b></div><div class="barbg"><div class="barfill" id="ytBar"></div></div>
+    <div style="display:flex;gap:40px;margin-top:20px;font-size:30px">👁️ <b id="ytViews">0</b> views <span class="up" style="margin-left:auto">▲ performa</span></div></div></div>
+ </section>
+
+ <!-- 14 CLAUDE -->
+ <section class="scene" data-scene="claude">
+  <div class="title it" data-seg="0" style="top:80px;font-size:100px">DIBANGUN BARENG<br><span style="color:#d97757">✳ CLAUDE</span></div>
+  <div class="win it L" data-seg="0" style="left:50px;right:180px;top:340px;--x:.2"><div class="bar"><i></i><i></i><i></i>lyans · sistem agen</div>
+   <div class="body" style="font-size:30px;line-height:1.6">🧺 Laundry · 🏠 Kos · 🍜 FnB<br>🪙 Web3 · ▶️ YouTube <span class="pill g" style="margin-left:14px">● ONLINE</span></div></div>
+  <div class="win it R" data-seg="0" style="left:180px;right:50px;top:610px;--x:.5"><div class="bar"><i></i><i></i><i></i>cls-engine · deployment</div>
+   <div class="body term"><span class="g">✓</span> build selesai<br><span class="g">✓</span> deploy berjalan</div></div>
+  <div class="win it D" data-seg="1" style="left:50px;right:120px;top:870px"><div class="bar"><i></i><i></i><i></i>lyans-video · render</div>
+   <div class="body"><div style="font-size:30px;margin-bottom:12px">🎬 Video yang lagi lu tonton 😎</div><div class="barbg"><div class="barfill" id="vidBar"></div></div></div></div>
+ </section>
+
+ <!-- 15 OUTRO -->
+ <section class="scene" data-scene="outro"><div class="officebg"></div>
+  <div class="title it Z" data-seg="0" style="top:150px;left:0;right:0;text-align:center;font-size:220px">LYANS</div>
+  <div class="it" data-seg="0" style="position:absolute;top:420px;left:0;right:0;text-align:center;--x:.3"><span class="ytag" style="font-size:32px">AI AGENT · KANTORNYA BOS ADITYA</span></div>
+  <div class="it D" data-seg="2" style="position:absolute;top:520px;left:0;right:0;text-align:center"><span class="follow">➕ FOLLOW</span></div>
+  <div class="it" data-seg="1" style="position:absolute;top:670px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:20px;font-size:32px;font-weight:700;color:#cbd5e1">
+   <img src="assets/aditya.jpg" style="width:96px;height:96px;border-radius:50%;object-fit:cover;object-position:78% 30%;border:4px solid #facc15">created by <b style="color:#facc15">Aditya Edwin Brilliansyah</b></div>
+ </section>
+
+ <!-- characters layer -->
+ <div id="chars"></div>
  <div id="cap"><div id="capIn"></div></div>
- <div class="bar" id="bar"></div>
+ <div class="aigen">AI-generated</div>
+ <div class="prog" id="prog"></div>
 </div>
 <script>
 const TL = window.TL, SC = {}; TL.scenes.forEach(s => SC[s.name] = s);
-// ---------- business scenes ----------
-const BIZ = [
- {k:"laundry",e:"🧺",c:"#38bdf8",t:"Bisnis Laundry",a:[["📲","Agen Order","Terima pesanan WhatsApp, hitung berat & harga"],["🛵","Agen Antar-Jemput","Jadwalkan pickup & delivery kurir"],["🔔","Agen Notifikasi","Kabari pelanggan saat cucian siap"]],f:["💬","🤖","🛵","✅"],l:"Chat → order → kurir → selesai"},
- {k:"kos",e:"🏠",c:"#34d399",t:"Bisnis Kos-kosan",a:[["🛏️","Agen Booking","Jawab calon penghuni & cek kamar kosong"],["💸","Agen Tagihan","Ingatkan jatuh tempo & catat pembayaran"],["🛠️","Agen Maintenance","Terima komplain & teruskan ke teknisi"]],f:["🙋","🤖","🧾","✅"],l:"Chat → cek data → tagihan/tiket"},
- {k:"fnb",e:"🍜",c:"#fb923c",t:"Bisnis FnB",a:[["🧾","Agen Kasir","Terima order online & teruskan ke dapur"],["📦","Agen Stok","Pantau bahan baku & alert sebelum habis"],["📊","Agen Laporan","Rekap omzet & menu terlaris harian"]],f:["🛒","🤖","👨‍🍳","📊"],l:"Order → dapur → stok → laporan"},
- {k:"web3",e:"🪙",c:"#f472b6",t:"Bisnis Web3",a:[["📈","Agen Market Monitor","Pantau harga token & on-chain 24/7"],["👛","Agen Wallet Alert","Lapor setiap transaksi masuk/keluar"],["💬","Agen Komunitas","Jaga grup Telegram & Discord"]],f:["⛓️","🤖","🚨","👑"],l:"On-chain → analisa → alert Bos"},
- {k:"youtube",e:"▶️",c:"#ef4444",t:"Channel YouTube",a:[["💡","Agen Ide & Script","Riset tren, konsep & tulis script"],["🚀","Agen Upload & SEO","Judul, deskripsi, tag & jadwal tayang"],["📊","Agen Analitik","Pantau views, subscriber & performa"]],f:["💡","🎬","📤","📈"],l:"Ide → video → upload → analisa"},
-];
-const bizEl = document.getElementById('biz');
-BIZ.forEach(b => {
-  const s = document.createElement('section'); s.className = 'scene'; s.dataset.scene = b.k; s.style.setProperty('--c', b.c);
-  s.innerHTML = `<div class="cam"><div class="wrap" style="justify-content:flex-start;top:310px">
-   <div class="bhead it zoom" data-seg="0"><div class="emo">${b.e}</div><h2>${b.t}</h2></div>
-   ${b.a.map((a,i)=>`<div class="agent it ${i%2?'fromR':'fromL'}" data-seg="${i+1}"><div class="ic">${a[0]}</div><div><b>${a[1]}</b><span>${a[2]}</span></div><div class="st">ONLINE</div></div>`).join('')}
-   <div class="flow it" data-seg="3" style="--x:.9">${b.f.map((f,i)=>`<div class="f">${f}</div>${i<3?'<div class="ar">➜</div>':''}`).join('')}<div class="lbl">⚙️ ${b.l}</div></div>
-  </div></div>`;
-  bizEl.appendChild(s);
-});
-// ---------- tree ----------
-const TC = [540, 1030], NODES = [["🧺","Laundry","#38bdf8",-150],["🏠","Kos-kosan","#34d399",-90],["🍜","FnB","#fb923c",-30],["🪙","Web3","#f472b6",30+180-60],["▶️","YouTube","#ef4444",150]];
-// place 5 nodes around center
-const ang = [-162,-90,-18,54,126], R = 400;
-const treeEl = document.getElementById('tree'), svg = document.getElementById('treeSvg'); const nodePos = [];
-NODES.forEach((n,i) => {
-  const a = ang[i]*Math.PI/180, x = TC[0] + Math.cos(a)*R*1.05, y = TC[1] + Math.sin(a)*R; nodePos.push([x,y]);
-  svg.insertAdjacentHTML('beforeend', `<line class="it" data-seg="${i+1}" x1="${TC[0]}" y1="${TC[1]}" x2="${x}" y2="${y}"/>`);
-  treeEl.insertAdjacentHTML('beforeend', `<div class="node" style="left:${x}px;top:${y}px;--c:${n[2]}"><div class="in it zoom" data-seg="${i+1}"><div class="c">${n[0]}</div><b>${n[1]}</b></div></div><div class="dot" id="dot${i}" style="--c:${n[2]};opacity:0"></div>`);
-});
-// ---------- particles ----------
-const pts = document.getElementById('pts'); let seed = 3; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
-for (let i = 0; i < 60; i++) { const s = 3 + rnd()*7, d = 8 + rnd()*14;
-  pts.insertAdjacentHTML('beforeend', `<i class="pt" style="left:${rnd()*1080}px;top:${1950 + rnd()*200}px;width:${s}px;height:${s}px;opacity:${.2+rnd()*.5};animation-duration:${d}s;animation-delay:-${rnd()*d}s;background:${['#fff','#67e8f9','#c4b5fd','#f9a8d4'][i%4]}"></i>`); }
-// ---------- timing vars ----------
-document.querySelectorAll('.scene').forEach(el => {
-  const s = SC[el.dataset.scene]; el.style.setProperty('--s', s.s); el.style.setProperty('--d', s.d);
-  el.querySelectorAll('[data-seg]').forEach(it => { const g = s.segs[+it.dataset.seg]; const x = parseFloat(it.style.getPropertyValue('--x')) || 0; it.style.setProperty('--o', (g.t - s.s + x).toFixed(3)); });
-});
-document.getElementById('bar').style.animation = `prog ${TL.total}s linear both`;
-document.head.insertAdjacentHTML('beforeend', '<style>@keyframes prog{from{transform:scaleX(0)}to{transform:scaleX(1)}}</style>');
-
-// ---------- per-frame render ----------
 const $ = id => document.getElementById(id);
-const POSE = { hook:[540,650,1.25], outro:[540,560,1.0], tree:[540,1015,.62], def:[930,215,.4] };
-const ease = x => x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
-function sceneAt(t){ let cur = TL.scenes[0]; for (const s of TL.scenes) if (t >= s.s) cur = s; return cur; }
-function poseOf(name){ return POSE[name] || POSE.def; }
-const capIn = $('capIn'); let capKey = '';
+// ================= PIXEL CHARACTER ENGINE =================
+const PW = 72, PH = 80;
+function shade(hex, a){ const c = parseInt(hex.slice(1),16); let r=c>>16,g=c>>8&255,b=c&255; const f = a<0 ? v=>v*(1+a) : v=>v+(255-v)*a; return '#'+[r,g,b].map(v=>Math.round(f(v)).toString(16).padStart(2,'0')).join(''); }
+function hex2rgb(h){ const c=parseInt(h.slice(1),16); return [c>>16,c>>8&255,c&255]; }
+const OUTLINE = [26,16,32];
+function drawChar(D, ex, mo, blink, look){
+  const cv = document.createElement('canvas'); cv.width = PW; cv.height = PH; const x = cv.getContext('2d'); const pal = new Set();
+  const F = c => { pal.add(c); x.fillStyle = c; }, ST = (c,w) => { pal.add(c); x.strokeStyle = c; x.lineWidth = w; x.lineCap = 'round'; };
+  const el = (cx,cy,rx,ry,c) => { F(c); x.beginPath(); x.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); x.fill(); };
+  const rr = (X,Y,w,h,r,c) => { F(c); x.beginPath(); x.roundRect(X,Y,w,h,r); x.fill(); };
+  const poly = (p,c) => { F(c); x.beginPath(); x.moveTo(p[0][0],p[0][1]); p.slice(1).forEach(q=>x.lineTo(q[0],q[1])); x.closePath(); x.fill(); };
+  const arc = (pts,c,w) => { ST(c,w); x.beginPath(); x.moveTo(pts[0],pts[1]); x.quadraticCurveTo(pts[2],pts[3],pts[4],pts[5]); x.stroke(); };
+  const sk = D.skin, skd = shade(sk,-.16), hr = D.hair, hrl = shade(hr,.28), hrd = shade(hr,-.3), sh = D.shirt, shd = shade(sh,-.25), dark = '#3b1d1d';
+  // back hair
+  if (D.style==='long' || D.style==='bun2') rr(15,18,42,42,14,hr);
+  // body
+  rr(7,61,58,32,15,sh); rr(44,64,21,30,10,shd); rr(7,76,58,10,0,shd);
+  if (D.hoodie) { rr(26,60,20,6,3,shd); ST(shade(sh,.5),1.4); x.beginPath(); x.moveTo(31,64); x.lineTo(31,73); x.moveTo(41,64); x.lineTo(41,73); x.stroke(); }
+  else if (D.chef) { for (const yy of [66,71,76]) { el(33,yy,1.2,1.2,'#cbd5e1'); el(39,yy,1.2,1.2,'#cbd5e1'); } }
+  else { poly([[28,59],[44,59],[36,69]], skd); poly([[26,59],[30,58],[36,69],[33,70]], shade(sh,.15)); poly([[46,59],[42,58],[36,69],[39,70]], shade(sh,.15)); }
+  if (D.lan) { ST(D.lan,2); x.beginPath(); x.moveTo(28,60); x.lineTo(33,73); x.moveTo(44,60); x.lineTo(39,73); x.stroke(); rr(30.5,72,11,10,1.5,'#f8fafc'); rr(32.5,74,7,2.5,0,D.lan); }
+  // neck, ears, head
+  rr(30,47,12,15,3,skd);
+  el(19.5,37,3.6,5,sk); el(52.5,37,3.6,5,sk); el(19.5,37,1.6,3,skd); el(52.5,37,1.6,3,skd);
+  el(36,34,17,19.5,skd); el(35,33,16,18.5,sk);
+  // hair
+  const S = D.style;
+  if (S==='spiky') {
+    el(36,22,18.5,12,hr); poly([[18,23],[19,9],[25,14],[29,3],[35,11],[41,2],[46,11],[53,5],[54,23]],hr);
+    rr(16.5,20,4.5,16,2,hr); rr(51,20,4.5,16,2,hr);
+    poly([[18,19],[54,19],[53,27],[48,22],[44,28],[39,21],[33,27],[28,21],[23,28],[19,25]],hr);
+    poly([[27,9],[31,5],[30,12]],hrl); poly([[39,6],[43,4],[41,10]],hrl); poly([[46,10],[51,7],[49,13]],hrl);
+  } else if (S==='short' || S==='cap' || S==='chef') {
+    el(36,21,18.5,11,hr); rr(16.5,20,4.5,12,2,hr); rr(51,20,4.5,12,2,hr);
+    poly([[18,18],[54,18],[54,25],[45,21.5],[30,23.5],[18,26]],hr); el(29,14,6,2,hrl);
+  } else if (S==='long' || S==='bun' || S==='bun2') {
+    el(36,21,19,12,hr); rr(15,20,7,S==='bun'?16:32,3,hr); rr(50,20,7,S==='bun'?16:32,3,hr);
+    poly([[18,19],[55,19],[55,26],[41,21],[23,30],[17,28]],hr); el(30,13,6,2,hrl);
+    if (S==='bun') { el(36,6,7.5,6,hr); el(34,4,3,1.5,hrl); }
+  } else if (S==='beanie') {
+    rr(16.5,22,4.5,12,2,hr); rr(51,22,4.5,12,2,hr);
+  }
+  if (S==='cap') { el(36,19,19,11,D.cap); rr(17,18,38,6,2,D.cap); rr(34,20.5,28,4.5,2,shade(D.cap,-.3)); el(36,12,3,3,'#f8fafc'); }
+  if (S==='chef') { rr(21,-3,30,19,9,'#f8fafc'); el(25,3,7,7,'#f8fafc'); el(47,3,7,7,'#f8fafc'); rr(19,13,34,8,2,'#dbe2ea'); }
+  if (S==='beanie') { el(36,21,19.5,13,D.cap); rr(16,20,40,8,3,shade(D.cap,-.25)); el(36,6,4.5,4,shade(D.cap,.35)); }
+  // brows
+  const bc = hrd, by = ex==='wow' ? 23.5 : 26;
+  if (ex==='think') { rr(25,24,8,2,1,bc); poly([[39,26],[47,25],[47,27],[39,28]],bc); }
+  else { rr(25,by,8,2,1,bc); rr(39,by,8,2,1,bc); }
+  // eyes
+  const eye = D.eye || '#1e1b4b', lx = look;
+  const openEye = (ex0, big) => { if (big) { rr(ex0-.5,28,9,8,3,'#ffffff'); rr(ex0+2.5+lx,29.5,3.6,5,1.4,eye); } else { rr(ex0,29,7.5,6,2.5,'#ffffff'); rr(ex0+2.2+lx,29.5,3.5,5.5,1.4,eye); } rr(ex0+2.6+lx,30,1.2,1.2,0,'#ffffff'); };
+  const happyEye = ex0 => arc([ex0,33.5, ex0+3.7,28.5, ex0+7.5,33.5], dark, 1.7);
+  const shut = ex0 => rr(ex0,32,7.5,1.6,1,dark);
+  const happy = ex==='laugh';
+  if (D.shades) { rr(24,28,10.5,6.5,2,'#0b0f1a'); rr(37.5,28,10.5,6.5,2,'#0b0f1a'); rr(34,30,4,1.5,0,'#0b0f1a'); rr(26,29,3,1.2,0,'#64748b'); rr(39.5,29,3,1.2,0,'#64748b'); }
+  else {
+    if (happy) { happyEye(25.5); happyEye(39); }
+    else if (blink) { shut(25.5); shut(39); }
+    else { openEye(25.5, ex==='wow'); if (ex==='wink') happyEye(39); else openEye(39, ex==='wow'); }
+  }
+  if (D.glasses) { ST('#111827',1.3); x.strokeRect(24.5,28,9.5,7.5); x.strokeRect(38,28,9.5,7.5); x.beginPath(); x.moveTo(34,31); x.lineTo(38,31); x.stroke(); }
+  // nose + blush
+  rr(35,37,2.4,3,1,skd);
+  if (['grin','laugh','wink','proud'].includes(ex)) { el(24.5,41,3,1.5,'#f2a0a0'); el(47.5,41,3,1.5,'#f2a0a0'); }
+  // mouth
+  const talking = mo > .12;
+  if (ex==='laugh') { const h = 5 + mo*2; F(dark); x.beginPath(); x.moveTo(29,42.5); x.lineTo(43,42.5); x.ellipse(36,42.5,7,h,0,0,Math.PI); x.fill(); rr(30,42.5,12,1.8,0,'#ffffff'); el(36,42.5+h-1.5,3.5,1.6,'#e8746f'); }
+  else if (talking) { const h = 2 + mo*4.5, w = ex==='wow' ? 5 : 8; rr(36-w/2,43.5-h/2+1,w,h,2.5,dark); if (h>3.2) rr(36-w/2+.8,43.5-h/2+1,w-1.6,1.3,0,'#ffffff'); if (h>4) rr(36-w/2+1.5,43.5+h/2-.6,w-3,1.4,1,'#e8746f'); }
+  else if (ex==='wow') el(36,45,2.6,3.4,dark);
+  else if (ex==='grin' || ex==='wink' || ex==='proud') { F(dark); x.beginPath(); x.moveTo(30,42.5); x.quadraticCurveTo(36,49,42,42.5); x.closePath(); x.fill(); rr(31.5,42.6,9,1.6,0,'#ffffff'); }
+  else if (ex==='think') arc([32,45, 37,44, 41,42.5], dark, 1.6);
+  else arc([31,43.5, 36,47.5, 41,43.5], dark, 1.7);
+  // accessories
+  if (D.headset) { ST('#334155',3); x.beginPath(); x.ellipse(36,30,20.5,22,0,Math.PI*1.04,Math.PI*1.96); x.stroke(); rr(14.5,31,6.5,11,2,D.hs||'#22d3ee'); rr(51,31,6.5,11,2,D.hs||'#22d3ee'); arc([18,41, 19,49, 28,48], '#334155', 1.6); el(29,48,2,1.6,D.hs||'#22d3ee'); }
+  // ---- post-process: snap palette + outline ----
+  const P = [...pal].map(hex2rgb); const id = x.getImageData(0,0,PW,PH), d = id.data;
+  for (let i=0;i<d.length;i+=4){ if (d[i+3] < 120) { d[i+3]=0; continue; } let best=0,bd=1e9; for (let k=0;k<P.length;k++){ const q=P[k], dd=(q[0]-d[i])**2+(q[1]-d[i+1])**2+(q[2]-d[i+2])**2; if(dd<bd){bd=dd;best=k;} } d[i]=P[best][0];d[i+1]=P[best][1];d[i+2]=P[best][2];d[i+3]=255; }
+  const src = new Uint8ClampedArray(d);
+  for (let y=0;y<PH;y++) for (let X=0;X<PW;X++){ const i=(y*PW+X)*4; if (src[i+3]) continue; const nb=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const xx=X+a,yy=y+b; return xx>=0&&yy>=0&&xx<PW&&yy<PH&&src[(yy*PW+xx)*4+3];}); if (nb){ d[i]=OUTLINE[0];d[i+1]=OUTLINE[1];d[i+2]=OUTLINE[2];d[i+3]=255; } }
+  x.putImageData(id,0,0); return cv;
+}
+const cache = new Map();
+function sprite(D, ex, mo, blink, look){ const m = Math.round(mo*4)/4, k = `${D.id}|${ex}|${m}|${blink?1:0}|${look}`; if (!cache.has(k)) cache.set(k, drawChar(D, ex, m, blink, look)); return cache.get(k); }
+const CH = {
+ lyans:{id:'lyans',skin:'#f0c08a',hair:'#3d3470',style:'spiky',shirt:'#6d4bd8',lan:'#f97316',headset:true},
+ sari:{id:'sari',skin:'#ecbf94',hair:'#5b3a29',style:'bun',shirt:'#38bdf8',lan:'#0369a1'},
+ bima:{id:'bima',skin:'#d9a066',hair:'#2d2a26',style:'short',shirt:'#22c55e',lan:'#166534',glasses:true},
+ dodi:{id:'dodi',skin:'#c98b5a',hair:'#1f1f1f',style:'chef',shirt:'#f8fafc',chef:true},
+ kiki:{id:'kiki',skin:'#f1c9a5',hair:'#3f2a1e',style:'cap',cap:'#ef4444',shirt:'#ef4444',lan:'#111827'},
+ radar:{id:'radar',skin:'#e0ac7e',hair:'#111111',style:'beanie',cap:'#ec4899',shirt:'#1e293b',hoodie:true,shades:true},
+ whale:{id:'whale',skin:'#f3cfa8',hair:'#d6a756',style:'short',shirt:'#1d4ed8',glasses:true,lan:'#facc15'},
+ wallet:{id:'wallet',skin:'#e8b48a',hair:'#141414',style:'long',shirt:'#f59e0b',lan:'#7c2d12'},
+ riset:{id:'riset',skin:'#c68a5e',hair:'#4a3426',style:'short',shirt:'#0d9488',glasses:true,lan:'#f8fafc'},
+ airdrop:{id:'airdrop',skin:'#f0c08a',hair:'#2b2b2b',style:'cap',cap:'#a855f7',shirt:'#7e22ce',hoodie:true},
+ komunitas:{id:'komunitas',skin:'#f3cba5',hair:'#f472b6',style:'bun',shirt:'#334155',headset:true,hs:'#f472b6'},
+};
+class Char {
+  constructor(D, parent, scale, opts={}){ this.D=D; this.s=scale; this.o=opts; this.cv=document.createElement('canvas'); this.cv.width=PW; this.cv.height=PH; this.cv.className='px'; this.cv.style.width=PW*scale+'px'; this.cv.style.height=PH*scale+'px'; this.el=document.createElement('div'); this.el.className='char'; this.el.appendChild(this.cv); parent.appendChild(this.el); this.ctx=this.cv.getContext('2d'); this.seed=(D.id.length*1.7)%3; this.key=''; }
+  update(t, ex, mo){ const blink = ((t+this.seed) % 3.4) < .13; const look = Math.round(Math.sin(t*.6+this.seed*2)*1); const k = ex+mo.toFixed(2)+blink+look; if (k!==this.key){ this.key=k; this.ctx.clearRect(0,0,PW,PH); this.ctx.drawImage(sprite(this.D,ex,mo,blink,look),0,0); } }
+}
+// ================= SCENE SETUP =================
+// office background (pixel)
+const ocv = $('office'), ox = ocv.getContext('2d');
+const DESKS = [[12,40,'sari'],[44,40,'bima'],[76,40,'dodi'],[12,66,'radar'],[44,66,'whale'],[76,66,'wallet'],[28,86,'riset'],[60,86,'kiki']];
+function px(c,X,Y,w,h){ ox.fillStyle=c; ox.fillRect(X,Y,w,h); }
+function mini(D,X,Y,b){ // tiny agent at desk (8x10)
+  px(D.shirt,X+1,Y+5+b,7,4); px(shade(D.shirt,-.25),X+6,Y+5+b,2,4); px(D.skin,X+2,Y+1+b,5,5); px(D.style==='cap'?D.cap:D.style==='beanie'?D.cap:D.style==='chef'?'#f8fafc':D.hair,X+2,Y+b,5,2);
+  if (D.style==='long'||D.style==='bun') px(D.hair,X+1,Y+1+b,1,4), px(D.hair,X+7,Y+1+b,1,4);
+  px('#1a1020',X+3,Y+3+b,1,1); px('#1a1020',X+5,Y+3+b,1,1); }
+function drawOffice(t){
+  px('#2a3352',0,0,108,22); for (let i=0;i<3;i++){ const wx=6+i*34; px('#1b2238',wx-1,3,30,15); px('#7dd3fc',wx,4,28,13); px('#5aa8d6',wx,12,28,5); for (let b=0;b<6;b++) px('#3b6e9e',wx+2+b*4,9+(b%3),3,8-(b%3)); px('#1b2238',wx+13,4,1,13); }
+  for (let y=22;y<96;y++){ px((Math.floor((y-22)/4)%2)?'#8b5a3c':'#946243',0,y,108,1); } for (let y=22;y<96;y+=4) for (let k=0;k<108;k+=18) px('#6f4630',(k+(y%8?9:0))%108,y,1,4);
+  px('#3b4a7a',20,52,68,4); // runner rug
+  // lyans desk
+  px('#5b3fb3',40,24,28,12); mini(CH.lyans,49,22,Math.round(Math.sin(t*3))*0.5|0); px('#c08a5a',38,31,32,6); px('#9a6a42',38,37,32,2); px('#111827',47,27,14,5); px(Math.floor(t*4)%2?'#a78bfa':'#22d3ee',48,28,12,3);
+  DESKS.forEach(([X,Y,id],i)=>{ const b = Math.floor(t*3+i)%2; mini(CH[id],X+7,Y-7,b); px('#c08a5a',X,Y,22,6); px('#9a6a42',X,Y+6,22,2); px('#111827',X+7,Y-2,9,4); px(['#22d3ee','#4ade80','#facc15','#f472b6'][(Math.floor(t*2)+i)%4],X+8,Y-1,7,2); px('#1f2937',X+8,Y+9,6,3); });
+  for (const [X,Y] of [[2,24],[100,24],[2,88],[100,88]]) { px('#b45309',X+1,Y+4,5,4); px('#16a34a',X,Y,7,5); px('#22c55e',X+1,Y-1,5,3); }
+}
+drawOffice(0); const officeURL = ocv.toDataURL(); document.querySelectorAll('.officebg').forEach(e=>e.style.backgroundImage=`url(${officeURL})`);
+const TAGS = [[38,18,'LYANS · CEO AI',1],[2,28,'Bales chat laundry',1],[40,28,'Nagih sewa kamar 3',1],[72,28,'Cek stok telur',1],[0,54,'Pantau token 📈',2],[38,54,'Pantau whale 🐋',2],[70,54,'Jaga wallet Bos',2],[20,76,'Riset project baru',2],[58,76,'Upload video',2]];
+$('officeTags').innerHTML = TAGS.map(([X,Y,txt,sg],i)=>`<div class="it Z" data-seg="${sg-1}" style="position:absolute;left:${X*10}px;top:${Y*10}px;--x:${(i%4)*.25+.2};"><span class="${i?'wtag':'ytag'}" style="font-size:22px;box-shadow:0 6px 0 rgba(0,0,0,.35)">${i?'✔ ':''}${txt}</span></div>`).join('');
+// divisions
+const DIV = [['sari','🧺 Laundry',0],['bima','🏠 Kos-kosan',0],['dodi','🍜 FnB',0],['radar','🪙 Web3',1],['kiki','▶️ YouTube',1]];
+const divChars = [];
+$('divChips').innerHTML = DIV.map((d,i)=>`<div class="chip it R" data-seg="${d[2]}" style="--x:${[.15,.9,1.6,.05,.8][i]}"><span class="cslot"></span>${d[1]}</div>`).join('');
+$('divChips').querySelectorAll('.cslot').forEach((s,i)=>{ const c = new Char(CH[DIV[i][0]], s, 1.7); c.el.style.position='relative'; c.el.style.height='105px'; c.el.style.overflow='hidden'; c.cv.style.marginTop='-6px'; divChars.push(c); });
+// web3 agent cards
+const W3 = [['radar','Agen Radar','Pantau harga, volume & sentimen token 24/7','📈 harga · volume · sentimen'],['whale','Agen Whale','Baca data on-chain: dompet besar gerak ke mana','🐋 on-chain · smart money'],['wallet','Agen Wallet','Jaga dompet Bos, lapor tiap transaksi masuk/keluar','👛 transaksi · keamanan'],
+ ['riset','Agen Riset','Cek project baru: tokenomics, kontrak, tanda rug pull','🔍 due diligence · red flag'],['airdrop','Agen Airdrop','Catat & ingatkan garapan airdrop harian','🪂 quest · deadline'],['komunitas','Agen Komunitas','Jaga grup Telegram & Discord dari spam/scammer','💬 moderasi · FAQ']];
+const cardChars = [];
+['web3a','web3b'].forEach((sn,si)=>{ const box = document.querySelector(`.scene[data-scene="${sn}"] .cards`);
+  W3.slice(si*3,si*3+3).forEach((a,i)=>{ const d = document.createElement('div'); d.className = `acard it ${i%2?'R':'L'}`; d.dataset.seg = i; d.style.top = (240+i*320)+'px';
+    d.innerHTML = `<div class="cslot" style="flex:none;width:200px;height:250px;overflow:hidden;border-radius:20px;background:#151c33"></div><div><div class="nm">${a[1]}</div><div class="ds">${a[2]}</div><div class="tg">${a[3]}</div></div><div class="live">● LIVE</div>`;
+    box.appendChild(d); const c = new Char(CH[a[0]], d.querySelector('.cslot'), 3.1); c.el.style.position='relative'; c.el.style.left='-12px'; c.el.style.top='6px'; cardChars.push([sn,i,c]); }); });
+// boss pixel photo
+const bossImg = new Image(); bossImg.src = 'assets/aditya.jpg';
+bossImg.onload = () => { const c = $('bossPx'); c.width = 100; c.height = 55; const g = c.getContext('2d'); g.drawImage(bossImg,0,0,100,55); const id = g.getImageData(0,0,100,55); for (let i=0;i<id.data.length;i+=4) for (let k=0;k<3;k++) id.data[i+k] = Math.round(id.data[i+k]/42)*42; g.putImageData(id,0,0); window.BOSSREADY = true; };
+// fnb bars, stickies, ticker
+$('fnbBars').innerHTML = [40,55,48,70,62,85,100].map((h,i)=>`<div class="vbar" data-h="${h}" style="left:${i*72}px;height:0"></div>`).join('');
+const IDEAS = ['ide: tips laundry','ide: vlog kos','ide: resep viral','ide: edukasi web3','ide: behind the scene','ide: Q&A Bos'];
+$('stickies').innerHTML = IDEAS.map((s,i)=>`<div class="sticky it D" data-seg="0" style="--x:${i*.18};left:${(i%3)*330+20}px;top:${Math.floor(i/3)*175}px;transform:rotate(${[-4,3,-2,4,-3,2][i]}deg)">${s}</div>`).join('');
+$('tick').innerHTML = ('BTC <span class="up">▲2,1%</span> · ETH <span class="dn">▼0,6%</span> · SOL <span class="up">▲4,3%</span> · WHALE ALERT 🐋 · AIRDROP BARU 🪂 · ').repeat(6);
+// ---------- characters layer ----------
+const charsEl = $('chars');
+const lyans = new Char(CH.lyans, charsEl, 9);
+const sideDefs = { laundry:'sari', kos:'bima', fnb:'dodi', youtube:'kiki' };
+const sideChars = {}; Object.entries(sideDefs).forEach(([sn,id])=>{ const c = new Char(CH[id], charsEl, 7.5); c.el.style.opacity = 0; sideChars[sn] = c; c.tag = document.createElement('div'); c.tag.className = 'nametag'; c.tag.innerHTML = `<span class="wtag">${id.toUpperCase()} · ${({sari:'laundry',bima:'kos-kosan',dodi:'fnb',kiki:'youtube'})[id]}</span>`; charsEl.appendChild(c.tag); });
+const lyTag = document.createElement('div'); lyTag.className='nametag'; lyTag.innerHTML='<span class="ytag">LYANS · AI AGENT</span>'; charsEl.appendChild(lyTag);
+const profAva = $('profAva').getContext('2d');
+// Lyans pose per scene: [centerX, topY, scale, flip], caption Y
+const POSE = { hook:[540,900,13], born:[860,1380,7.5], office:[180,1470,6.5], divisi:[250,1150,9.5], laundry:[250,1370,8], kos:[250,1370,8], fnb:[250,1370,8], web3:[540,1010,12], web3a:[900,1520,5.5], web3b:[900,1520,5.5], web3flow:[250,1370,8], web3safe:[850,1360,8], youtube:[250,1370,8], claude:[250,1370,8], outro:[540,760,15] };
+const CAPY = { hook:780, born:1250, office:1300, divisi:1090, web3:900, web3a:1230, web3b:1230, web3safe:1230, outro:1640 };
+// ---------- timing vars ----------
+document.querySelectorAll('.scene').forEach(el => { const s = SC[el.dataset.scene]; el.style.setProperty('--s', s.s); el.style.setProperty('--d', s.d);
+  el.querySelectorAll('[data-seg]').forEach(it => { const g = s.segs[Math.min(+it.dataset.seg, s.segs.length-1)]; const xo = parseFloat(it.style.getPropertyValue('--x')) || 0; it.style.setProperty('--o', (g.t - s.s + xo).toFixed(3)); }); });
+// ================= RENDER =================
+const ease = k => k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2,3)/2;
+const clamp = (v,a=0,b=1) => Math.max(a,Math.min(b,v));
+function sceneAt(t){ let c = TL.scenes[0]; for (const s of TL.scenes) if (t >= s.s) c = s; return c; }
+function segAt(sc,t){ let g = null; for (const x of sc.segs) if (t >= x.t - .05) g = x; return g; }
+function chunks(words){ const out=[]; let cur=[]; words.forEach((w,i)=>{ cur.push(i); if (cur.length>=4 || /[,.!:?]$/.test(w.replace(/\*/g,'')) && cur.length>=2) { out.push(cur); cur=[]; } }); if (cur.length) out.push(cur); return out; }
+function kwFlags(words){ let on=false; return words.map(w=>{ if (w.startsWith('*')) on=true; const r=on; if (/\*[,.!:?]*$/.test(w)) on=false; return r; }); }
+function capHTML(words, idx){ const fl = kwFlags(words); return idx.map(i=>{ const w = words[i].replace(/\*/g,''); return fl[i] ? `<b>${w}</b>` : w; }).join(' '); }
+let capKey = '';
 window.render = function(t){
-  const f = Math.min(TL.level.length-1, Math.floor(t*TL.fps)), lv = TL.level[f] || 0;
-  const sc = sceneAt(t), idx = TL.scenes.indexOf(sc), prev = TL.scenes[idx-1];
-  // avatar pose
-  let p = poseOf(sc.name);
-  if (prev) { const k = ease(Math.min(1, (t - sc.s + .35)/.8)); const q = poseOf(prev.name); p = q.map((v,i)=> v + (p[i]-v)*k); }
-  const bob = Math.sin(t*2.4)*10, tilt = Math.sin(t*1.3)*4 + lv*3*Math.sin(t*9);
-  $('ava').style.transform = `translate(${p[0]-200}px,${p[1]-235+bob}px) scale(${p[2]}) rotate(${tilt}deg)`;
-  // mouth / eyes / antenna
-  const mh = 12 + lv*46; const m = $('mouth'); m.setAttribute('height', mh); m.setAttribute('y', 242 - mh/2); m.setAttribute('width', 60 + lv*24); m.setAttribute('x', 170 - lv*12);
-  const bp = t % 3.7, blink = bp < .14 ? Math.abs(Math.cos(bp/.14*Math.PI)) : 1, look = Math.sin(t*.9)*10;
-  ['eL','eR'].forEach((id,i)=>{ const e=$(id), h=62*Math.max(.08,blink); e.setAttribute('height',h); e.setAttribute('y',171-h/2); e.setAttribute('x',(i?236:118)+look); });
-  $('ant').setAttribute('r', 14 + lv*10); $('core').setAttribute('r', 22 + lv*12);
-  const wave = (sc.name==='outro'||sc.name==='hook') ? Math.sin(t*7)*35 - 40 : Math.sin(t*2)*8;
-  $('armRr').setAttribute('transform', `rotate(${wave})`);
-  $('avaWaves').querySelectorAll('i').forEach((w,i)=>{ const ph = ((t*1.2 + i/3) % 1); w.style.opacity = (lv>.08 ? (1-ph)*.8*Math.min(1,lv*2) : 0); w.style.transform = `scale(${.75+ph*.6})`; });
-  // beat pulse + flash + cam zoom
-  const beat = 60/TL.bpm, bph = t > TL.drop ? ((t-TL.drop) % beat)/beat : 1, pulse = Math.exp(-bph*5)*(t>TL.drop?1:0);
-  $('bg').style.transform = `scale(${1+pulse*.04})`; $('bg').style.filter = `brightness(${1+pulse*.35})`;
-  const since = t - sc.s; $('flash').style.opacity = idx>0 ? Math.max(0, .55*(1-since/.3)) : Math.max(0, .9*(1-(t-TL.drop)/.3))*(t>=TL.drop?1:0);
-  document.querySelectorAll('.scene').forEach(el=>{ const s = SC[el.dataset.scene]; const k = (t - s.s)/s.d; if (k>=0&&k<=1) el.firstElementChild.style.transform = `scale(${1+k*.045})`; });
-  // tree data dots
-  if (sc.name==='tree') nodePos.forEach((np,i)=>{ const d=$('dot'+i), st=sc.segs[i+1].t+.4; if (t<st){d.style.opacity=0;return;} const ph=((t-st)*.8+i*.2)%1; d.style.opacity=1; d.style.left=(TC[0]+(np[0]-TC[0])*ph)+'px'; d.style.top=(TC[1]+(np[1]-TC[1])*ph)+'px'; });
-  // business: active agent glow + flow light
-  const bz = BIZ.find(b=>b.k===sc.name);
-  if (bz) { const el = document.querySelector(`.scene[data-scene="${bz.k}"]`);
-    el.querySelectorAll('.agent').forEach((a,i)=>{ const g = sc.segs[i+1], on = t>=g.t && t<g.t+g.d+.2; a.style.boxShadow = on ? `0 0 0 4px ${bz.c},0 0 60px ${bz.c}` : 'none'; a.style.background = on ? 'rgba(40,40,80,.9)' : ''; });
-    const fs = sc.segs[3].t + 1.2; el.querySelectorAll('.flow .f').forEach((n,i)=>{ const on = t>fs && Math.floor((t-fs)*2.5)%5 === i; n.style.borderColor = on ? bz.c : ''; n.style.boxShadow = on ? `0 0 40px ${bz.c}` : 'none'; n.style.transform = on ? 'scale(1.18)' : 'none'; }); }
-  if (sc.name==='how') document.querySelectorAll('#steps .step').forEach((s,i)=>{ const g=sc.segs[i+1], on=t>=g.t&&t<g.t+g.d+.25; s.style.boxShadow= on?'0 0 0 4px #22d3ee,0 0 60px #22d3ee':'none'; s.style.transform=on?'scale(1.04)':''; });
-  // captions (word-by-word)
-  let seg = null; for (const s of TL.scenes) for (const g of s.segs) if (t >= g.t - .05 && t < g.t + g.d + .3) seg = g;
-  const key = seg ? seg.cap : '';
-  if (key !== capKey) { capIn.innerHTML = seg ? seg.words.map(w=>`<span>${w}</span>`).join('') : ''; capKey = key; }
-  $('cap').style.opacity = seg ? 1 : 0;
-  if (seg) capIn.querySelectorAll('span').forEach((s,i)=>{ const wt = seg.wt[i], dt = t - wt; s.style.opacity = dt < 0 ? .3 : 1; const nxt = seg.wt[i+1] ?? (seg.t+seg.d); const on = t>=wt && t<nxt; s.className = on ? 'on' : ''; s.style.transform = dt<0 ? 'scale(1)' : on ? `scale(${1.12 + Math.max(0,.15-dt)})` : 'scale(1)'; });
+  const f = Math.min(TL.level.length-1, Math.max(0, Math.floor(t*TL.fps))), lv = TL.level[f] || 0;
+  const sc = sceneAt(t), idx = TL.scenes.indexOf(sc), prev = TL.scenes[idx-1], seg = segAt(sc,t);
+  const speaking = seg && t < seg.t + seg.d;
+  const ex = seg ? (seg.ex==='talk' ? 'smile' : seg.ex) : 'smile';
+  // ---- Lyans ----
+  let p = POSE[sc.name];
+  if (prev) { const k = ease(clamp((t - sc.s + .3)/.65)); const q = POSE[prev.name]; p = q.map((v,i)=>v+(p[i]-v)*k); }
+  const breathe = Math.sin(t*2.2)*.012, bob = speaking ? Math.abs(Math.sin(t*7))*6*lv : 0;
+  lyans.update(t, ex, speaking ? lv : 0);
+  lyans.el.style.transform = `translate(${p[0]-PW*9/2}px,${p[1]-bob}px) scale(${p[2]/9},${p[2]/9*(1+breathe)})`;
+  lyans.el.style.transformOrigin = '50% 0';
+  lyTag.style.transform = `translate(${p[0]-150}px,${p[1]+ 6*p[2]}px)`; lyTag.style.opacity = ['laundry','kos','fnb','youtube','web3flow','claude','born'].includes(sc.name) ? clamp((t-sc.s-.4)/.3) : 0;
+  // ---- side characters ----
+  Object.entries(sideChars).forEach(([sn,c])=>{ const s = SC[sn]; const inS = t>=s.s && t<s.s+s.d; const k = clamp((t-s.s-.2)/.5)*clamp((s.s+s.d-t)/.3);
+    c.el.style.opacity = inS ? 1 : 0; c.tag.style.opacity = inS ? k : 0;
+    if (inS) { const xoff = (1-ease(k))*500; c.update(t, ['grin','smile','laugh'][Math.floor((t-s.s)/2.2)%3], 0); c.el.style.transform = `translate(${820-PW*7.5/2+xoff}px,${1400+Math.sin(t*2)*4}px) scaleX(-1)`; c.tag.style.transform = `translate(${700+xoff}px,1360px)`; } });
+  // ---- per-scene extras ----
+  if (sc.name==='office') drawOffice(t);
+  if (sc.name==='born' || t<SC.born.s+SC.born.d) { profAva.clearRect(0,0,PW,PH); profAva.drawImage(sprite(CH.lyans,'grin',0,false,0),0,0);
+    const g2 = SC.born.segs[2], k = clamp((t-g2.t-.1)/.9); $('bossReal').style.clipPath = `inset(0 ${100-k*100}% 0 0)`; $('bossScan').style.left = (k>0&&k<1) ? `calc(${k*100}% - 5px)` : '-20px'; }
+  divChars.forEach((c,i)=>c.update(t,'smile',0));
+  cardChars.forEach(([sn,i,c])=>{ const s = SC[sn]; if (t<s.s||t>s.s+s.d) return; const g = s.segs[i]; const on = t>=g.t && t<g.t+g.d; c.update(t, on ? (i===1?'think':'grin') : 'smile', on ? (TL.voice ? lv*.6 : .0) : 0); c.el.parentElement.parentElement.style.borderColor = on ? '#facc15' : '#27314d'; });
+  // typing texts
+  document.querySelectorAll(`.scene[data-scene="${sc.name}"] [data-type]`).forEach(el=>{ const g = sc.segs[+el.dataset.type]; const full = el.dataset.full; const n = clamp((t-g.t-.25)/Math.max(.6, g.d*.7))*full.length|0; const s = full.slice(0,n); if (el.textContent!==s) el.textContent = s; el.style.display = n ? '' : 'none'; });
+  if (sc.name==='fnb') { const g = sc.segs[2]; document.querySelectorAll('#fnbBars .vbar').forEach((b,i)=>{ b.style.height = (clamp((t-g.t-.4-i*.08)/.5)*+b.dataset.h*1.6)+'px'; }); }
+  if (sc.name==='youtube') { const g = sc.segs[1]; const k = clamp((t-g.t)/(g.d+.3)); $('ytBar').style.width = (k*100)+'%'; $('ytViews').textContent = Math.round(ease(k)*12480).toLocaleString('id-ID'); }
+  if (sc.name==='claude') { const k = clamp((t-sc.s-.5)/(sc.d-1)); $('vidBar').style.width = (k*100)+'%'; }
+  if (sc.name==='web3') { $('tick').style.transform = `translateX(${-((t-sc.s)*160)%1400}px)`; }
+  // ---- captions ----
+  let html = '';
+  if (seg && t < seg.t + seg.d + .35) { const ch = chunks(seg.words); let wi = 0; seg.wt.forEach((w,i)=>{ if (t>=w) wi=i; }); const ci = ch.findIndex(c=>c.includes(wi)); const cw = ch[ci];
+    html = capHTML(seg.words, cw); const key = seg.t+'|'+ci;
+    if (key!==capKey){ capKey = key; $('capIn').innerHTML = html; $('capIn').dataset.t0 = t; } const d0 = t - (+$('capIn').dataset.t0); $('capIn').style.transform = `scale(${1 + Math.max(0,.12 - d0*.6)})`; }
+  else if (capKey){ capKey=''; $('capIn').innerHTML=''; }
+  $('cap').style.opacity = html ? 1 : 0;
+  const cy = CAPY[sc.name] ?? 1235; $('cap').style.top = cy+'px';
+  $('prog').style.transform = `scaleX(${t/TL.total})`;
 };
 window.READY = true;
 </script>

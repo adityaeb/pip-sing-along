@@ -5,10 +5,10 @@ const { spawn } = require('child_process');
 const path = require('path');
 const out = process.argv[2] || path.join(__dirname, 'lyans.mp4');
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ args: ['--allow-file-access-from-files'] });
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
   await page.goto('file://' + path.join(__dirname, 'index.html'));
-  await page.waitForFunction(() => window.READY);
+  await page.waitForFunction(() => window.READY && window.BOSSREADY);
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() => Promise.all([...document.images].map(i => i.decode())));
   const { total, fps } = await page.evaluate(() => ({ total: TL.total, fps: TL.fps }));
