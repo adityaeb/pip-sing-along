@@ -100,10 +100,9 @@ SC = {s["name"]: s for s in scenes}
 for s in scenes[1:]: whoosh(s["s"] - 0.25)
 for s in scenes:
     for g in s["segs"]: pop(g["t"])
-for nm in ("status", "kas", "gas"):
-    for g in SC[nm]["segs"][:2]: ding(g["t"] + 0.6)
-for k in range(9): ding(SC["twist"]["segs"][1]["t"] + k * 0.22, 0.09)   # spam notifikasi
-typing(SC["comeback"]["segs"][2]["t"] + 0.2, 2.0)
+for g in SC["wa"]["segs"]: ding(g["t"] + 0.6)
+for g in SC["marketing"]["segs"]: ding(g["t"] + 0.8)
+for k in range(5): pop(SC["hasil"]["segs"][1]["t"] + 0.2 + k * 0.12, 1200, 0.1)
 
 # ---------- mix ----------
 if clips:

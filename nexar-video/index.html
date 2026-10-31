@@ -90,87 +90,85 @@ canvas.px{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 .pc .ln{height:12px;background:#cbd5e1;border-radius:6px;margin:14px 0}
 .pc .scanl{position:absolute;left:0;right:0;height:60px;background:linear-gradient(transparent,rgba(250,204,21,.6),transparent);animation:scanmv 1.6s ease-in-out infinite alternate}
 @keyframes scanmv{from{top:-60px}to{top:100%}}
+
+.hb{position:absolute;bottom:0;width:380px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.hbf{width:100%;height:0;border-radius:20px 20px 0 0;background:linear-gradient(#facc15,#f97316)}
+.hb b{font:700 30px JBM;margin-top:14px}.hb .y2{color:#facc15}.hb span{font-family:Anton;font-size:56px}
+.dev{position:absolute;background:#111827;border:6px solid #475569;padding:14px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.dev .scr{width:100%;height:100%;border-radius:14px;background:#0e1424;padding:16px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.dev .scr b{font-family:Anton;font-size:34px;color:#facc15}.dev .scr span{font:700 18px JBM;color:#94a3b8}
+.mini{flex:1;display:flex;align-items:flex-end;gap:6px}.mini i{flex:1;background:#22d3ee;border-radius:4px 4px 0 0}
+.radar{position:absolute;inset:0;border-radius:50%;background:radial-gradient(#0f2a1e,#06130d);border:4px solid #22c55e;overflow:hidden}
+.radar .ring{position:absolute;border-radius:50%;border:2px dashed rgba(34,197,94,.5)}
+.sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(34,197,94,.55),transparent 25%);animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.radar .home{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:80px}
+.pin{position:absolute;font-size:46px;transform:translate(-50%,-100%)}
+.stat{position:absolute;left:60px;right:60px;height:270px;background:#0e1424;border:3px solid #27314d;border-radius:30px;padding:26px 40px}
+.stat .lb{font:700 28px JBM;color:#94a3b8}.stat .vl{font-family:Anton;font-size:130px;line-height:1.05}.stat .sb{font-size:34px;font-weight:800}
+.stat .y,.title .y{color:#facc15}
 </style></head><body>
 <div id="stage">
  <div class="gridbg"></div><div class="glow"></div>
 
  <section class="scene" data-scene="hook">
-  <div class="title it" data-seg="0" style="top:90px;font-size:120px">TABUNG GAS<br><span class="y">KOK BEDA?</span></div>
-  <div class="win it L" data-seg="0" style="left:50px;right:50px;top:400px">
-   <div class="bar"><i></i><i></i><i></i>grup karyawan · qu laundry (contoh)</div>
-   <div class="body"><div class="who">Rudi (karyawan)</div><div class="msg in">tabung kosong 6</div>
-    <div class="who" style="text-align:right">Nexar 🤖</div><div class="msg out" data-type="1" data-full="⚠️ Catatan Nexar: kosong 4. Selisih 2 tabung. Menunggu konfirmasi Owner 👀"></div></div></div>
+  <div class="it" data-seg="0" style="position:absolute;left:60px;top:120px"><span class="ytag" style="font-size:32px">omzet harian · qu laundry</span></div>
+  <div class="title it Z" data-seg="0" style="top:190px;font-size:190px"><span id="kgCount">250</span> <span class="y">KG</span></div>
+  <div class="it" data-seg="0" style="position:absolute;left:60px;right:60px;top:430px;height:520px">
+   <div class="hb" style="left:60px"><div class="hbf" id="hb1" style="background:#64748b"></div><b>SEBELUM</b><span>250 kg</span></div>
+   <div class="hb" style="left:520px"><div class="hbf" id="hb2"></div><b class="y2">SESUDAH AI</b><span>300 kg</span></div></div>
+  <div class="it S" data-seg="1" style="position:absolute;left:560px;top:420px;--x:.2"><span class="ytag" style="font-size:44px;transform:rotate(-6deg);display:inline-block">+20% 🚀</span></div>
  </section>
 
  <section class="scene" data-scene="intro"><div class="shopbg"></div>
-  <div class="title it Z" data-seg="0" style="top:170px;left:0;right:0;text-align:center;font-size:280px">NEXAR</div>
-  <div class="it" data-seg="1" style="position:absolute;top:500px;left:0;right:0;text-align:center"><span class="ytag" style="font-size:34px">AI AGENT · QU LAUNDRY</span></div>
+  <div class="title it Z" data-seg="0" style="top:150px;left:0;right:0;text-align:center;font-size:280px">NEXAR</div>
+  <div class="it" data-seg="1" style="position:absolute;top:480px;left:0;right:0;text-align:center"><span class="ytag" style="font-size:34px">AI AGENT · QU LAUNDRY</span></div>
+  <div class="it D" data-seg="1" style="position:absolute;top:560px;left:0;right:0;text-align:center;--x:.9"><span class="wtag" style="font-size:36px">🎂 LAHIR 25 OKTOBER 2026</span></div>
  </section>
 
- <section class="scene" data-scene="status">
-  <div class="title it" data-seg="0" style="top:90px;font-size:110px">UPDATE <span class="y">NOTA</span></div>
+ <section class="scene" data-scene="wa">
+  <div class="title it" data-seg="0" style="top:90px;font-size:110px">INPUT VIA <span style="color:#4ade80">WA</span></div>
   <div class="win it L" data-seg="0" style="left:50px;right:50px;top:250px">
    <div class="bar"><i></i><i></i><i></i>grup karyawan · qu laundry (contoh)</div>
-   <div class="body"><div class="who">Rudi (karyawan)</div><div class="msg in">Q102 sudah diambil</div><div class="msg out" data-type="1" data-full="✅ Nota Q102 → DIAMBIL. Makasih Rudi!"></div></div></div>
-  <div class="win it R" data-seg="1" style="left:120px;right:50px;top:690px">
-   <div class="bar"><i></i><i></i><i></i>status nota hari ini</div>
-   <div class="body" style="padding:6px 24px"><div class="row">🧺 Q101 · 4 kg<span class="pill b">PROSES</span></div><div class="row">🧺 Q102 · 6 kg<span class="pill g" id="q102">DIAMBIL ✓</span></div><div class="row">🧺 Q103 · 3 kg<span class="pill o">SIAP</span></div></div></div>
+   <div class="body">
+    <div class="msg in">Q102 sudah diambil</div><div class="msg out" data-type="0" data-full="✅ Nota Q102 → DIAMBIL"></div>
+    <div class="msg in it F" data-seg="1">beli sabun 25rb</div><div class="msg out" data-type="1" data-full="📒 Kas: pengeluaran Rp25.000"></div>
+    <div class="msg in it F" data-seg="1" style="--x:.9">stok gas 18</div><div class="msg out" data-type="1b" data-full="🔥 Stok gas isi: 18 tabung"></div>
+   </div></div>
  </section>
 
- <section class="scene" data-scene="kas">
-  <div class="title it" data-seg="0" style="top:90px;font-size:110px">CATAT <span class="y">KAS</span></div>
-  <div class="win it L" data-seg="0" style="left:50px;right:50px;top:250px">
-   <div class="bar"><i></i><i></i><i></i>grup karyawan · qu laundry (contoh)</div>
-   <div class="body"><div class="who">Rudi (karyawan)</div><div class="msg in">beli sabun 25rb</div><div class="msg out" data-type="1" data-full="📒 Tercatat: pengeluaran Rp25.000 (sabun)"></div></div></div>
-  <div class="win it D" data-seg="1" style="left:120px;right:50px;top:690px;--x:.4">
-   <div class="bar"><i></i><i></i><i></i>buku kas · hari ini</div>
-   <div class="body" style="font-size:32px;line-height:1.6">Pemasukan <b class="up" style="color:#4ade80">Rp640.000</b><br>Pengeluaran <b style="color:#f87171" id="kasOut">Rp40.000</b><br>Saldo <b id="kasBal">Rp600.000</b></div></div>
+ <section class="scene" data-scene="device">
+  <div class="title it" data-seg="0" style="top:90px;font-size:110px">BANYAK <span class="y">DEVICE</span></div>
+  <div class="dev it D" data-seg="1" style="left:60px;top:420px;width:230px;height:430px;border-radius:34px;--x:0">
+   <div class="scr"><b>Qu Laundry</b><span>📱 karyawan</span><div class="mini" data-k="0"></div></div></div>
+  <div class="dev it D" data-seg="1" style="left:330px;top:380px;width:360px;height:480px;border-radius:30px;--x:.7">
+   <div class="scr"><b>Qu Laundry</b><span>📟 tablet kasir</span><div class="mini" data-k="1"></div></div></div>
+  <div class="dev it D" data-seg="1" style="left:710px;top:430px;width:320px;height:300px;border-radius:16px;--x:1.5">
+   <div class="scr"><b>Qu Laundry</b><span>💻 laptop owner</span><div class="mini" data-k="2"></div></div></div>
+  <div class="it" data-seg="0" style="position:absolute;left:60px;top:300px;--x:.5"><span class="wtag">🔄 data sinkron real-time</span></div>
  </section>
 
- <section class="scene" data-scene="gas">
-  <div class="title it" data-seg="0" style="top:90px;font-size:110px">STOK <span class="y">GAS</span></div>
-  <div class="win it L" data-seg="0" style="left:50px;right:50px;top:250px">
-   <div class="bar"><i></i><i></i><i></i>stok tabung gas</div>
-   <div class="body" style="display:flex;gap:40px;font-size:34px"><div>🟢 Isi <b style="font-size:60px">18</b></div><div>⚪ Kosong <b style="font-size:60px">4</b></div></div></div>
-  <div class="win it R" data-seg="1" style="left:50px;right:50px;top:530px">
-   <div class="bar"><i></i><i></i><i></i>grup karyawan (contoh)</div>
-   <div class="body"><div class="msg in">tabung kosong 6</div><div class="msg out" style="background:#7c2d12" data-type="1" data-full="⚠️ Nggak cocok sama catatan (4). Laporan ditahan, nunggu Owner."></div></div></div>
-  <div class="win it D" data-seg="2" style="left:160px;right:50px;top:960px">
-   <div class="body notif"><img src="assets/aditya.jpg" style="width:96px;height:96px;border-radius:50%;object-fit:cover;object-position:78% 30%;border:4px solid #facc15"><div><b>Owner 👑</b><br><span style="color:#94a3b8;font-size:28px">Keputusan akhir tetap di Owner</span></div></div></div>
+ <section class="scene" data-scene="antar">
+  <div class="title it" data-seg="0" style="top:90px;font-size:110px">ANTAR-JEMPUT <span class="y">AI</span></div>
+  <div class="it Z" data-seg="0" style="position:absolute;left:60px;right:60px;top:250px;height:560px;border-radius:30px;overflow:hidden;border:4px solid #27314d">
+   <canvas class="px" id="map" width="96" height="56" style="width:960px;height:560px"></canvas></div>
+  <div class="win it R" data-seg="1" style="left:60px;right:60px;top:850px">
+   <div class="body" style="padding:8px 24px"><div class="row">🛵 Jemput · Jl. Melati<span class="pill b">09:00</span></div><div class="row">🛵 Antar · Perum Asri<span class="pill g">11:30</span></div><div class="row">🧠 Rute diurutkan AI<span class="pill o">HEMAT WAKTU</span></div></div></div>
  </section>
 
- <section class="scene" data-scene="jadwal">
-  <div class="title it" data-seg="0" style="top:90px;font-size:110px">JADWAL <span class="y">HARIAN</span></div>
-  <div class="sched it L" data-seg="0" style="top:280px;--x:.3"><div class="tm">⏰ 2 JAM</div><div><b>Pengingat cucian</b><span>cek nota yang jatuh tempo</span></div></div>
-  <div class="sched it R" data-seg="1" style="top:510px"><div class="tm">🌇 SORE</div><div><b>Rekap sore</b><span>ringkasan transaksi hari ini</span></div></div>
-  <div class="sched it L" data-seg="1" style="top:740px;--x:.8"><div class="tm">🌙 MALAM</div><div><b>Cek kas malam</b><span>cocokkan uang &amp; catatan</span></div></div>
+ <section class="scene" data-scene="marketing">
+  <div class="title it" data-seg="0" style="top:90px;font-size:110px">MARKETING <span class="y">AI</span></div>
+  <div class="it Z" data-seg="0" style="position:absolute;left:140px;top:260px;width:800px;height:800px">
+   <div class="radar"><div class="sweep"></div><div class="ring" style="inset:25%"></div><div class="ring" style="inset:0"></div>
+    <div class="home">🧺</div><div id="pins"></div></div></div>
+  <div class="it" data-seg="1" style="position:absolute;left:60px;top:1090px;--x:.3"><span class="ytag" style="font-size:30px">🎯 calon pelanggan sekitar laundry</span></div>
  </section>
 
- <section class="scene" data-scene="foto">
-  <div class="title it" data-seg="0" style="top:90px;font-size:110px">BACA <span class="y">FOTO</span> <span style="font-size:56px;color:#94a3b8">(segera)</span></div>
-  <div class="pc it D" data-seg="1" style="left:50px;top:320px;transform:rotate(-4deg)">📒 BUKU KAS<div class="ln"></div><div class="ln" style="width:70%"></div><div class="ln"></div><div class="ln" style="width:50%"></div><div class="ln"></div><div class="scanl"></div></div>
-  <div class="pc it D" data-seg="1" style="left:390px;top:300px;--x:.35">▦ BUKTI QRIS<div style="width:200px;height:200px;margin:20px auto;background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0 0/40px 40px"></div><div class="scanl"></div></div>
-  <div class="pc it D" data-seg="1" style="left:730px;top:330px;--x:.7;transform:rotate(4deg)">🧾 NOTA<div class="ln"></div><div class="ln" style="width:60%"></div><div class="ln"></div><div class="ln" style="width:80%"></div><div class="scanl"></div></div>
-  <div class="it" data-seg="0" style="position:absolute;left:60px;top:760px"><span class="wtag">👁️ claude vision</span></div>
- </section>
-
- <section class="scene" data-scene="twist">
-  <div class="phone it Z" data-seg="0"><div class="bar" style="font:700 24px JBM;color:#94a3b8;padding:24px 30px;border-bottom:2px solid #1d2540">📱 WhatsApp Owner</div><div id="spam"></div></div>
-  <div class="it" data-seg="2" style="position:absolute;left:120px;right:120px;top:960px"><div style="font:700 26px JBM;color:#94a3b8;margin-bottom:8px">KUOTA FONNTE</div><div class="meter"><div id="quota"></div></div></div>
-  <div class="it S" data-seg="2" style="position:absolute;left:0;right:0;top:420px;text-align:center;--x:.6"><span class="toggle">NEXAR: OFF</span></div>
- </section>
-
- <section class="scene" data-scene="comeback">
-  <div class="title it" data-seg="0" style="top:90px;font-size:110px">DIET <span class="y">KATA</span></div>
-  <div class="win it L" data-seg="1" style="left:50px;right:50px;top:270px">
-   <div class="bar"><i></i><i></i><i></i>laporan ke owner</div>
-   <div class="body" style="display:flex;gap:30px;align-items:center;font-size:32px">
-    <div style="flex:1;text-align:center;color:#f87171"><div style="font-family:Anton;font-size:90px">12</div>pesan terpisah ❌</div>
-    <div style="font-size:60px">→</div>
-    <div style="flex:1;text-align:center;color:#4ade80"><div style="font-family:Anton;font-size:90px">1</div>pesan ringkas ✅</div></div></div>
-  <div class="win it D" data-seg="2" style="left:50px;right:50px;top:640px">
-   <div class="bar"><i></i><i></i><i></i>laundry uji · test</div>
-   <div class="body term" data-type="2" data-full="$ npm test&#10;✓ status nota&#10;✓ stok gas&#10;✓ catat kas&#10;136 tes lulus ✅"></div></div>
+ <section class="scene" data-scene="hasil">
+  <div class="title it" data-seg="0" style="top:90px;font-size:120px">HASILNYA <span class="y">🔥</span></div>
+  <div class="stat it L" data-seg="0" style="top:300px"><div class="lb">OMZET / HARI</div><div class="vl"><span style="color:#64748b">250</span> → <span class="y" id="kg2">250</span> KG</div><div class="sb up">▲ +20%</div></div>
+  <div class="stat it R" data-seg="1" style="top:600px"><div class="lb">PELANGGAN BARU</div><div class="vl"><span class="y">+<span id="cust">0</span></span></div><div class="sb">orang 🙌</div></div>
+  <div class="it D" data-seg="2" style="position:absolute;left:60px;top:910px"><span class="wtag" style="font-size:34px">📅 SEJAK 25 OKTOBER 2026</span></div>
  </section>
 
  <section class="scene" data-scene="outro"><div class="shopbg"></div>
@@ -293,8 +291,24 @@ function drawShop(t){
 }
 drawShop(0); const shopURL = scv.toDataURL();
 document.head.insertAdjacentHTML('beforeend', `<style>.shopbg{position:absolute;inset:-60px;background:url(${shopURL}) center/cover;image-rendering:pixelated;filter:blur(10px) brightness(.4)}</style>`);
-// spam notifications
-$('spam').innerHTML = Array.from({length:12},(_,i)=>`<div class="notif2" data-i="${i}">⚠️ <b>Perlu keputusan Anda</b><br>Nota Q${130+i} lewat jatuh tempo. Mohon cek dan konfirmasi status nota ini ya Bos…</div>`).join('');
+// devices mini charts, radar pins, map
+document.querySelectorAll('.mini').forEach(m=>m.innerHTML=[40,55,48,70,62,85,100].map(h=>`<i data-h="${h}" style="height:0"></i>`).join(''));
+const PINS=[[22,30],[70,22],[78,64],[30,72],[58,40],[16,52],[45,15],[84,44],[40,84],[64,80]];
+$('pins').innerHTML = PINS.map(([x,y],i)=>`<div class="pin" style="left:${x}%;top:${y}%;opacity:0">📍</div>`).join('');
+const mcv = $('map').getContext('2d');
+const ROUTE=[[48,28],[48,10],[20,10],[20,44],[76,44],[76,16],[48,16]];
+function M(c,x,y,w,h){ mcv.fillStyle=c; mcv.fillRect(x,y,w,h); }
+function drawMap(k){
+  M('#14532d',0,0,96,56); for (let i=0;i<12;i++) M('#166534',(i*37)%90,(i*23)%50,6,5);
+  M('#475569',0,9,96,3); M('#475569',0,43,96,3); M('#475569',19,0,3,56); M('#475569',47,0,3,56); M('#475569',75,0,3,56); M('#475569',0,15,96,2);
+  for (const [x,y,c] of [[12,2,'#f87171'],[28,20,'#60a5fa'],[60,2,'#fbbf24'],[84,24,'#a78bfa'],[8,30,'#34d399'],[60,48,'#f472b6'],[86,48,'#fb923c'],[28,48,'#93c5fd']]) { M(c,x,y,6,5); M('#7c2d12',x,y,6,2); }
+  M('#facc15',44,24,9,8); M('#1e3a8a',44,24,9,3);
+  // route
+  const seg = ROUTE.length-1, pos = k*seg, si = Math.min(seg-1, Math.floor(pos)), f = pos-si;
+  for (let i=0;i<=si;i++){ const [x1,y1]=ROUTE[i],[x2,y2]=ROUTE[i+1]; const ff = i<si?1:f; const ex=x1+(x2-x1)*ff, ey=y1+(y2-y1)*ff; M('#facc15',Math.min(x1,ex),Math.min(y1,ey),Math.abs(ex-x1)+1,Math.abs(ey-y1)+1); }
+  const [x1,y1]=ROUTE[si],[x2,y2]=ROUTE[si+1]; const cx=x1+(x2-x1)*f, cy=y1+(y2-y1)*f; M('#111827',cx-2,cy-2,5,5); M('#ef4444',cx-1,cy-1,3,3);
+}
+drawMap(0);
 // characters
 const charsEl = $('chars');
 const nexar = new Char(CH.nexar, charsEl, 9);
@@ -303,9 +317,9 @@ const lyansC = new Char(CH.lyans, charsEl, 7.5); lyansC.el.style.opacity = 0;
 const nxTag = document.createElement('div'); nxTag.className='nametag'; nxTag.innerHTML='<span class="ytag">NEXAR · AI AGENT</span>'; charsEl.appendChild(nxTag);
 const rdTag = document.createElement('div'); rdTag.className='nametag'; rdTag.innerHTML='<span class="wtag">RUDI · KARYAWAN</span>'; charsEl.appendChild(rdTag);
 const lyTag = document.createElement('div'); lyTag.className='nametag'; lyTag.innerHTML='<span class="wtag">LYANS · BOS AGEN</span>'; charsEl.appendChild(lyTag);
-const POSE = { hook:[250,1370,8], intro:[540,900,13], status:[250,1370,8], kas:[250,1370,8], gas:[250,1420,7.5], jadwal:[540,1220,9.5], foto:[540,1180,10], twist:[820,1360,8], comeback:[250,1370,8], outro:[300,820,11] };
-const CAPY = { intro:780, jadwal:1000, foto:960, outro:1680 };
-const RUDI_IN = ['hook','status','kas','gas'];
+const POSE = { hook:[250,1400,7.5], intro:[540,900,13], wa:[250,1370,8], device:[250,1400,7.5], antar:[250,1420,7.5], marketing:[250,1420,7.5], hasil:[250,1400,7.5], outro:[300,820,11] };
+const CAPY = { intro:780, outro:1680 };
+const RUDI_IN = ['wa'];
 document.querySelectorAll('.scene').forEach(el => { const s = SC[el.dataset.scene]; el.style.setProperty('--s', s.s); el.style.setProperty('--d', s.d);
   el.querySelectorAll('[data-seg]').forEach(it => { const g = s.segs[Math.min(+it.dataset.seg, s.segs.length-1)]; const xo = parseFloat(it.style.getPropertyValue('--x')) || 0; it.style.setProperty('--o', (g.t - s.s + xo).toFixed(3)); }); });
 // ================= RENDER =================
@@ -332,17 +346,19 @@ window.render = function(t){
   // Rudi (karyawan) on the right in chat scenes
   const rIn = RUDI_IN.includes(sc.name); const rk = rIn ? clamp((t-sc.s-.15)/.45)*clamp((sc.s+sc.d-t)/.3) : 0;
   rudi.el.style.opacity = rIn ? 1 : 0; rdTag.style.opacity = rk;
-  if (rIn) { const xo = (1-ease(rk))*500; rudi.update(t, sc.name==='gas' && t > sc.segs[1].t ? 'wow' : 'smile', 0); rudi.el.style.transform = `translate(${830-PW*7.5/2+xo}px,${1420+Math.sin(t*2)*4}px) scaleX(-1)`; rdTag.style.transform = `translate(${690+xo}px,1380px)`; }
+  if (rIn) { const xo = (1-ease(rk))*500; rudi.update(t, 'smile', 0); rudi.el.style.transform = `translate(${830-PW*7.5/2+xo}px,${1420+Math.sin(t*2)*4}px) scaleX(-1)`; rdTag.style.transform = `translate(${690+xo}px,1380px)`; }
   // Lyans joins in outro
   const lIn = sc.name==='outro'; const lk = lIn ? clamp((t-sc.s-.3)/.5) : 0;
   lyansC.el.style.opacity = lIn ? 1 : 0; lyTag.style.opacity = lk;
   if (lIn) { const xo = (1-ease(lk))*500; lyansC.update(t, 'grin', 0); lyansC.el.style.transform = `translate(${800-PW*7.5/2+xo}px,${1010+Math.sin(t*2)*4}px) scaleX(-1)`; lyTag.style.transform = `translate(${650+xo}px,970px)`; }
   // extras
   if (sc.name==='intro' || sc.name==='outro') { drawShop(t); document.querySelectorAll('.shopbg').forEach(e=>{}); }
-  document.querySelectorAll(`.scene[data-scene="${sc.name}"] [data-type]`).forEach(el=>{ const g = sc.segs[+el.dataset.type]; const full = el.dataset.full; const n = clamp((t-g.t-.2)/Math.max(.6, g.d*.75))*full.length|0; const s = full.slice(0,n); if (el.textContent!==s) el.textContent = s; el.style.display = n ? '' : 'none'; });
-  if (sc.name==='status') { const g = sc.segs[1]; const on = t > g.t + .3; $('q102').textContent = on ? 'DIAMBIL ✓' : 'SIAP'; $('q102').className = on ? 'pill g' : 'pill o'; }
-  if (sc.name==='kas') { const g = sc.segs[1]; const k = clamp((t-g.t-.3)/.8); $('kasOut').textContent = 'Rp' + (15000 + Math.round(k*25000)).toLocaleString('id-ID'); $('kasBal').textContent = 'Rp' + (625000 - Math.round(k*25000)).toLocaleString('id-ID'); }
-  if (sc.name==='twist') { const g1 = sc.segs[1]; document.querySelectorAll('#spam .notif2').forEach((n,i)=>{ n.style.display = t > g1.t + i*.22 ? '' : 'none'; }); const sp = $('spam'); const shown = [...sp.children].filter(n=>n.style.display!=='none').length; sp.style.transform = `translateY(${-Math.max(0, shown-4)*150}px)`; $('quota').style.width = (clamp((t-g1.t)/(sc.segs[2].t+.6-g1.t))*100)+'%'; }
+  document.querySelectorAll(`.scene[data-scene="${sc.name}"] [data-type]`).forEach(el=>{ const tp = el.dataset.type, g = sc.segs[parseInt(tp)], dl = tp.endsWith('b') ? .75 : 0; const full = Array.from(el.dataset.full); const n = clamp((t-g.t-.15-dl)/.7)*full.length|0; const s = full.slice(0,n).join(''); if (el.textContent!==s) el.textContent = s; el.style.display = n ? '' : 'none'; });
+  if (sc.name==='hook') { const g = sc.segs[0]; const k = ease(clamp((t-g.t-.6)/1.8)); $('kgCount').textContent = Math.round(250+50*k); $('hb1').style.height = (clamp((t-g.t-.2)/.6)*250/300*100)+'%'; $('hb2').style.height = (k*100)+'%'; }
+  if (sc.name==='device') { const g = sc.segs[1]; document.querySelectorAll('.mini').forEach((m,mi)=>m.querySelectorAll('i').forEach((b,i)=>{ b.style.height = (clamp((t-g.t-.3-mi*.7-i*.06)/.4)*+b.dataset.h)+'%'; })); }
+  if (sc.name==='antar') drawMap(clamp((t-sc.s-.4)/(sc.d-.9)));
+  if (sc.name==='marketing') document.querySelectorAll('#pins .pin').forEach((p,i)=>{ const k = clamp((t-sc.s-.5-i*.3)/.25); p.style.opacity = k; p.style.transform = `translate(-50%,-100%) scale(${.3+.7*k + (k>0&&k<1?.3:0)})`; });
+  if (sc.name==='hasil') { const g0 = sc.segs[0], g1 = sc.segs[1]; $('kg2').textContent = Math.round(250+50*ease(clamp((t-g0.t-.4)/1.4))); $('cust').textContent = Math.round(45*ease(clamp((t-g1.t)/1.3))); }
   // captions
   let html = '';
   if (seg && t < seg.t + seg.d + .35) { const ch = chunks(seg.words); let wi = 0; seg.wt.forEach((w,i)=>{ if (t>=w) wi=i; }); const ci = ch.findIndex(c=>c.includes(wi)); const cw = ch[ci];
