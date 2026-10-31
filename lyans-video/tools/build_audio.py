@@ -22,9 +22,13 @@ def trim(x, th=0.006):
 
 ENGINE = "none"
 try:
-    import edge_tts
+    import edge_tts, ssl
+    import edge_tts.communicate as _cm
+    PROXY = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
+    for ca in ("/root/.ccr/ca-bundle.crt",):  # proxy CA (cloud environment), jika ada
+        if os.path.exists(ca): _cm._SSL_CTX = ssl.create_default_context(cafile=ca)
     async def _tts(text):
-        c = edge_tts.Communicate(text, VOICE, rate=RATE); buf = b""
+        c = edge_tts.Communicate(text, VOICE, rate=RATE, proxy=PROXY); buf = b""
         async for ch in c.stream():
             if ch["type"] == "audio": buf += ch["data"]
         return buf

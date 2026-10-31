@@ -383,7 +383,7 @@ const lyTag = document.createElement('div'); lyTag.className='nametag'; lyTag.in
 const profAva = $('profAva').getContext('2d');
 // Lyans pose per scene: [centerX, topY, scale, flip], caption Y
 const POSE = { hook:[540,900,13], born:[860,1380,7.5], office:[180,1470,6.5], divisi:[250,1150,9.5], laundry:[250,1370,8], kos:[250,1370,8], fnb:[250,1370,8], web3:[540,1010,12], web3a:[900,1520,5.5], web3b:[900,1520,5.5], web3flow:[250,1370,8], web3safe:[850,1360,8], youtube:[250,1370,8], claude:[250,1370,8], outro:[540,760,15] };
-const CAPY = { hook:780, born:1250, office:1300, divisi:1090, web3:900, web3a:1230, web3b:1230, web3safe:1230, outro:1640 };
+const CAPY = { hook:780, born:1250, office:1300, divisi:1090, web3:900, web3a:1230, web3b:1230, web3safe:1230, outro:1770 };
 // ---------- timing vars ----------
 document.querySelectorAll('.scene').forEach(el => { const s = SC[el.dataset.scene]; el.style.setProperty('--s', s.s); el.style.setProperty('--d', s.d);
   el.querySelectorAll('[data-seg]').forEach(it => { const g = s.segs[Math.min(+it.dataset.seg, s.segs.length-1)]; const xo = parseFloat(it.style.getPropertyValue('--x')) || 0; it.style.setProperty('--o', (g.t - s.s + xo).toFixed(3)); }); });
