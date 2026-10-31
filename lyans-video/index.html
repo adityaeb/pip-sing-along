@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<title>Lyans – AI Agent</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#05060f;font-family:Inter,"Noto Color Emoji",sans-serif;color:#fff}
+.bg{position:absolute;inset:0;background:
+ radial-gradient(900px 900px at 20% 15%,rgba(124,58,237,.45),transparent 60%),
+ radial-gradient(900px 900px at 85% 85%,rgba(6,182,212,.35),transparent 60%),#05060f}
+.grid{position:absolute;inset:-200px;background-image:linear-gradient(rgba(255,255,255,.05) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.05) 2px,transparent 2px);background-size:90px 90px;animation:gridmove 6s linear infinite}
+@keyframes gridmove{to{transform:translateY(90px)}}
+.orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:.5;animation:float 9s ease-in-out infinite alternate}
+@keyframes float{to{transform:translate(120px,-160px) scale(1.2)}}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 80px;text-align:center;
+ animation:sIn .5s ease both,sOut .45s ease forwards;
+ animation-delay:calc(var(--s)*1s),calc((var(--s) + var(--d) - .45)*1s)}
+@keyframes sIn{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
+@keyframes sOut{from{opacity:1}to{opacity:0;transform:scale(.94)}}
+.it{animation:up .7s cubic-bezier(.2,.9,.3,1.25) both;animation-delay:calc((var(--s) + var(--o,0))*1s)}
+@keyframes up{from{opacity:0;transform:translateY(80px) scale(.9)}to{opacity:1;transform:none}}
+.tag{font-size:40px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:#67e8f9;background:rgba(103,232,249,.1);border:2px solid rgba(103,232,249,.4);padding:14px 34px;border-radius:60px}
+.big{font-size:230px;font-weight:900;letter-spacing:-6px;line-height:1;background:linear-gradient(90deg,#a78bfa,#22d3ee,#f472b6,#a78bfa);background-size:300% 100%;-webkit-background-clip:text;color:transparent;animation:up .8s cubic-bezier(.2,.9,.3,1.25) both,shine 4s linear infinite;animation-delay:calc((var(--s) + var(--o,0))*1s),0s}
+@keyframes shine{to{background-position:300% 0}}
+h1{font-size:96px;font-weight:900;line-height:1.05;letter-spacing:-2px}
+h2{font-size:72px;font-weight:800;line-height:1.1}
+p.lead{font-size:50px;font-weight:500;color:#cbd5e1;line-height:1.35}
+.grad{background:linear-gradient(90deg,#a78bfa,#22d3ee);-webkit-background-clip:text;color:transparent}
+.bot{width:420px;height:420px;border-radius:50%;display:grid;place-items:center;font-size:230px;
+ background:radial-gradient(circle at 35% 30%,#312e81,#0b1020 70%);box-shadow:0 0 0 6px rgba(167,139,250,.6),0 0 120px rgba(124,58,237,.8),inset 0 0 80px rgba(34,211,238,.35);position:relative}
+.ring{position:absolute;inset:-40px;border-radius:50%;border:4px dashed rgba(34,211,238,.55);animation:spin 12s linear infinite}
+.ring.r2{inset:-80px;border:3px dotted rgba(244,114,182,.5);animation-duration:20s;animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.05)}}
+.card{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.14);border-radius:44px;padding:44px 50px;backdrop-filter:blur(10px);text-align:left;width:920px}
+.date{font-size:150px;font-weight:900;line-height:1}
+.agent{display:flex;gap:36px;align-items:center;width:920px;text-align:left;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);border-left:12px solid var(--c);border-radius:36px;padding:34px 40px;margin-top:30px}
+.agent .ic{font-size:96px;flex:none;width:130px;height:130px;display:grid;place-items:center;border-radius:30px;background:rgba(255,255,255,.08)}
+.agent b{display:block;font-size:50px;font-weight:800;margin-bottom:8px}
+.agent span{font-size:38px;color:#cbd5e1;line-height:1.3}
+.head{display:flex;flex-direction:column;align-items:center;gap:22px;margin-bottom:30px}
+.head .emo{font-size:170px;line-height:1}
+.head h2{color:var(--c)}
+.flow{display:flex;align-items:flex-start;gap:20px;font-size:36px;color:#94a3b8;margin-top:36px;width:920px;text-align:left;background:rgba(0,0,0,.35);border-radius:28px;padding:26px 34px;border:2px dashed rgba(255,255,255,.18)}
+.flow em{font-style:normal;color:#fff;font-weight:700}
+.tree{position:relative;width:960px;height:1000px;margin-top:20px}
+.node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:10px}
+.node .c{width:210px;height:210px;border-radius:50%;display:grid;place-items:center;font-size:110px;background:rgba(255,255,255,.07);border:5px solid var(--c);box-shadow:0 0 60px var(--c)}
+.node b{font-size:42px;font-weight:800}
+.node.main .c{width:280px;height:280px;font-size:150px}
+.tree svg{position:absolute;inset:0}
+.tree line{stroke:rgba(255,255,255,.35);stroke-width:5;stroke-dasharray:14 12;animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-26}}
+.step{display:flex;align-items:center;gap:34px;width:920px;text-align:left;margin-top:26px;background:rgba(255,255,255,.06);border-radius:34px;padding:30px 38px;border:2px solid rgba(255,255,255,.12)}
+.step .n{flex:none;width:100px;height:100px;border-radius:50%;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(135deg,#7c3aed,#06b6d4)}
+.step span{font-size:42px;line-height:1.3}
+.arrow{font-size:50px;color:#67e8f9;margin-top:8px;height:40px}
+.bar{position:absolute;left:0;bottom:0;height:14px;background:linear-gradient(90deg,#7c3aed,#22d3ee,#f472b6);width:100%;transform-origin:left;animation:prog 78.5s linear both}
+@keyframes prog{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.wm{position:absolute;top:70px;left:0;right:0;text-align:center;font-size:34px;font-weight:700;letter-spacing:8px;color:rgba(255,255,255,.55)}
+.typing::after{content:"▍";animation:blink 1s steps(1) infinite;color:#22d3ee}
+@keyframes blink{50%{opacity:0}}
+</style></head><body>
+<div class="bg"></div><div class="grid"></div>
+<div class="orb" style="width:500px;height:500px;background:#7c3aed;left:-100px;top:300px"></div>
+<div class="orb" style="width:420px;height:420px;background:#06b6d4;right:-80px;bottom:300px;animation-delay:-4s"></div>
+<div class="wm">LYANS • AI AGENT</div>
+
+<!-- 1. HOOK 0-6 -->
+<section class="scene" style="--s:0;--d:6">
+  <div class="tag it" style="--o:.1">🤖 AI Agent Utama</div>
+  <div class="bot it pulse" style="--o:.4;margin:110px 0 90px"><div class="ring"></div><div class="ring r2"></div>🤖</div>
+  <p class="lead it" style="--o:.9">Kenalin, ini</p>
+  <div class="big" style="--o:1.2">LYANS</div>
+  <p class="lead it" style="--o:2">Otak dari semua agen AI<br>di bisnis kami 🧠⚡</p>
+</section>
+
+<!-- 2. LAHIR 6-13 -->
+<section class="scene" style="--s:6;--d:7">
+  <div class="tag it" style="--o:.1">📅 Hari Lahir</div>
+  <div class="date grad it" style="--o:.4;margin-top:60px">25</div>
+  <h1 class="it" style="--o:.6">OKTOBER 2026</h1>
+  <div class="card it" style="--o:1.4;margin-top:90px;text-align:center">
+    <p class="lead">Diciptakan oleh</p>
+    <h2 style="margin-top:16px">👨‍💻 Aditya Edwin<br><span class="grad">Brilliansyah</span></h2>
+    <p class="lead" style="margin-top:16px;font-size:40px">— The Boss 👑</p>
+  </div>
+</section>
+
+<!-- 3. TIM 13-21 -->
+<section class="scene" style="--s:13;--d:8;justify-content:flex-start;padding-top:200px">
+  <div class="tag it" style="--o:.1">⏱️ Baru 1 Minggu</div>
+  <h1 class="it" style="--o:.3;margin-top:40px">Sudah lahir <span class="grad">banyak agen</span> baru!</h1>
+  <div class="tree">
+    <svg viewBox="0 0 960 1000"><line x1="480" y1="480" x2="480" y2="130"/><line x1="480" y1="480" x2="175" y2="400"/><line x1="480" y1="480" x2="785" y2="400"/><line x1="480" y1="480" x2="250" y2="830"/><line x1="480" y1="480" x2="710" y2="830"/></svg>
+    <div class="node main it" style="--o:.6;--c:#a78bfa;left:480px;top:480px"><div class="c">🤖</div><b>LYANS</b></div>
+    <div class="node it" style="--o:1.2;--c:#38bdf8;left:175px;top:400px"><div class="c">🧺</div><b>Laundry</b></div>
+    <div class="node it" style="--o:1.5;--c:#34d399;left:480px;top:130px"><div class="c">🏠</div><b>Kos-kosan</b></div>
+    <div class="node it" style="--o:1.8;--c:#fb923c;left:785px;top:400px"><div class="c">🍜</div><b>FnB</b></div>
+    <div class="node it" style="--o:2.1;--c:#f472b6;left:710px;top:830px"><div class="c">🪙</div><b>Web3</b></div>
+    <div class="node it" style="--o:2.4;--c:#ef4444;left:250px;top:830px"><div class="c">▶️</div><b>YouTube</b></div>
+  </div>
+</section>
+
+<!-- 4. LAUNDRY 21-30 -->
+<section class="scene" style="--s:21;--d:9;--c:#38bdf8">
+  <div class="head it" style="--o:.1"><div class="emo">🧺</div><h2>Bisnis Laundry</h2></div>
+  <div class="agent it" style="--o:.6"><div class="ic">📲</div><div><b>Agen Order</b><span>Terima pesanan via WhatsApp, hitung berat &amp; harga otomatis</span></div></div>
+  <div class="agent it" style="--o:1.1"><div class="ic">🛵</div><div><b>Agen Antar-Jemput</b><span>Atur jadwal pickup &amp; delivery ke kurir</span></div></div>
+  <div class="agent it" style="--o:1.6"><div class="ic">🔔</div><div><b>Agen Notifikasi</b><span>Kabari pelanggan saat cucian sudah siap</span></div></div>
+  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> chat masuk → order dicatat → kurir dijadwalkan → pelanggan dikabari</div></div>
+</section>
+
+<!-- 5. KOS 30-39 -->
+<section class="scene" style="--s:30;--d:9;--c:#34d399">
+  <div class="head it" style="--o:.1"><div class="emo">🏠</div><h2>Bisnis Kos-kosan</h2></div>
+  <div class="agent it" style="--o:.6"><div class="ic">🛏️</div><div><b>Agen Booking</b><span>Jawab calon penghuni &amp; cek kamar yang masih kosong</span></div></div>
+  <div class="agent it" style="--o:1.1"><div class="ic">💸</div><div><b>Agen Tagihan</b><span>Ingatkan jatuh tempo sewa &amp; catat pembayaran</span></div></div>
+  <div class="agent it" style="--o:1.6"><div class="ic">🛠️</div><div><b>Agen Maintenance</b><span>Terima komplain (AC, air, WiFi) &amp; teruskan ke teknisi</span></div></div>
+  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> penghuni chat → agen cek data kamar → tagihan / tiket dibuat otomatis</div></div>
+</section>
+
+<!-- 6. FNB 39-48 -->
+<section class="scene" style="--s:39;--d:9;--c:#fb923c">
+  <div class="head it" style="--o:.1"><div class="emo">🍜</div><h2>Bisnis FnB</h2></div>
+  <div class="agent it" style="--o:.6"><div class="ic">🧾</div><div><b>Agen Kasir &amp; Order</b><span>Terima pesanan online &amp; teruskan ke dapur</span></div></div>
+  <div class="agent it" style="--o:1.1"><div class="ic">📦</div><div><b>Agen Stok</b><span>Pantau bahan baku &amp; kasih alert sebelum habis</span></div></div>
+  <div class="agent it" style="--o:1.6"><div class="ic">📊</div><div><b>Agen Laporan</b><span>Rekap omzet &amp; menu terlaris setiap hari</span></div></div>
+  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> order masuk → stok berkurang otomatis → laporan harian dikirim ke Bos</div></div>
+</section>
+
+<!-- 7. WEB3 48-57 -->
+<section class="scene" style="--s:48;--d:9;--c:#f472b6">
+  <div class="head it" style="--o:.1"><div class="emo">🪙</div><h2>Bisnis Web3</h2></div>
+  <div class="agent it" style="--o:.6"><div class="ic">📈</div><div><b>Agen Market Monitor</b><span>Pantau harga token &amp; data on-chain 24/7</span></div></div>
+  <div class="agent it" style="--o:1.1"><div class="ic">👛</div><div><b>Agen Wallet Alert</b><span>Lapor setiap transaksi masuk/keluar di wallet</span></div></div>
+  <div class="agent it" style="--o:1.6"><div class="ic">💬</div><div><b>Agen Komunitas</b><span>Jawab pertanyaan &amp; moderasi grup Telegram/Discord</span></div></div>
+  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> data on-chain dibaca → ada pergerakan penting → alert langsung ke Bos</div></div>
+</section>
+
+<!-- 8. YOUTUBE 57-66 -->
+<section class="scene" style="--s:57;--d:9;--c:#ef4444">
+  <div class="head it" style="--o:.1"><div class="emo">▶️</div><h2>Channel YouTube</h2></div>
+  <div class="agent it" style="--o:.6"><div class="ic">💡</div><div><b>Agen Ide &amp; Script</b><span>Riset tren, bikin ide konten &amp; tulis script/lirik</span></div></div>
+  <div class="agent it" style="--o:1.1"><div class="ic">🚀</div><div><b>Agen Upload &amp; SEO</b><span>Upload video, atur judul, deskripsi, tag &amp; thumbnail</span></div></div>
+  <div class="agent it" style="--o:1.6"><div class="ic">📊</div><div><b>Agen Analitik</b><span>Pantau views, subscriber &amp; video yang paling perform</span></div></div>
+  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> ide dipilih → video jadi → diupload terjadwal → performa dilaporkan ke Bos</div></div>
+</section>
+
+<!-- 9. CARA KERJA 66-74 -->
+<section class="scene" style="--s:66;--d:8">
+  <div class="tag it" style="--o:.1">🧠 Cara Kerja Lyans</div>
+  <div class="step it" style="--o:.5"><div class="n">1</div><span>Pesan / data masuk dari pelanggan atau sistem</span></div>
+  <div class="arrow it" style="--o:.8">▼</div>
+  <div class="step it" style="--o:1.1"><div class="n">2</div><span><b>Lyans</b> membaca &amp; memahami kebutuhannya</span></div>
+  <div class="arrow it" style="--o:1.4">▼</div>
+  <div class="step it" style="--o:1.7"><div class="n">3</div><span>Tugas diarahkan ke <b>agen spesialis</b> yang tepat</span></div>
+  <div class="arrow it" style="--o:2">▼</div>
+  <div class="step it" style="--o:2.3"><div class="n">4</div><span>Agen eksekusi &amp; lapor hasilnya ke <b>Bos Aditya</b> 👑</span></div>
+</section>
+
+<!-- 10. OUTRO 74-78.5 -->
+<section class="scene" style="--s:74;--d:4.5">
+  <div class="bot it pulse" style="--o:.1;width:300px;height:300px;font-size:160px;margin-bottom:80px"><div class="ring"></div>🤖</div>
+  <h1 class="it" style="--o:.4">1 Otak.<br><span class="grad">Banyak Agen.</span><br>Kerja 24/7 🚀</h1>
+  <p class="lead it typing" style="--o:1.2;margin-top:60px">Follow untuk lihat agen berikutnya</p>
+</section>
+
+<div class="bar"></div>
+</body></html>
