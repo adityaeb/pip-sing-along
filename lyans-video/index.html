@@ -1,170 +1,336 @@
 <!doctype html>
 <html lang="id"><head><meta charset="utf-8">
 <title>Lyans – AI Agent</title>
+<script src="timeline.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:1080px;height:1920px;overflow:hidden;background:#05060f;font-family:Inter,"Noto Color Emoji",sans-serif;color:#fff}
-.bg{position:absolute;inset:0;background:
- radial-gradient(900px 900px at 20% 15%,rgba(124,58,237,.45),transparent 60%),
- radial-gradient(900px 900px at 85% 85%,rgba(6,182,212,.35),transparent 60%),#05060f}
-.grid{position:absolute;inset:-200px;background-image:linear-gradient(rgba(255,255,255,.05) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.05) 2px,transparent 2px);background-size:90px 90px;animation:gridmove 6s linear infinite}
-@keyframes gridmove{to{transform:translateY(90px)}}
-.orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:.5;animation:float 9s ease-in-out infinite alternate}
-@keyframes float{to{transform:translate(120px,-160px) scale(1.2)}}
-.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 80px;text-align:center;
- animation:sIn .5s ease both,sOut .45s ease forwards;
- animation-delay:calc(var(--s)*1s),calc((var(--s) + var(--d) - .45)*1s)}
-@keyframes sIn{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
-@keyframes sOut{from{opacity:1}to{opacity:0;transform:scale(.94)}}
-.it{animation:up .7s cubic-bezier(.2,.9,.3,1.25) both;animation-delay:calc((var(--s) + var(--o,0))*1s)}
-@keyframes up{from{opacity:0;transform:translateY(80px) scale(.9)}to{opacity:1;transform:none}}
-.tag{font-size:40px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:#67e8f9;background:rgba(103,232,249,.1);border:2px solid rgba(103,232,249,.4);padding:14px 34px;border-radius:60px}
-.big{font-size:230px;font-weight:900;letter-spacing:-6px;line-height:1;background:linear-gradient(90deg,#a78bfa,#22d3ee,#f472b6,#a78bfa);background-size:300% 100%;-webkit-background-clip:text;color:transparent;animation:up .8s cubic-bezier(.2,.9,.3,1.25) both,shine 4s linear infinite;animation-delay:calc((var(--s) + var(--o,0))*1s),0s}
+#stage{position:absolute;inset:0;overflow:hidden}
+.bg{position:absolute;inset:-100px;background:
+ radial-gradient(800px 800px at 20% 18%,rgba(124,58,237,.5),transparent 60%),
+ radial-gradient(800px 800px at 85% 82%,rgba(6,182,212,.4),transparent 60%),
+ radial-gradient(600px 600px at 50% 50%,rgba(236,72,153,.18),transparent 60%),#05060f}
+.grid{position:absolute;inset:-200px;background-image:linear-gradient(rgba(255,255,255,.05) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.05) 2px,transparent 2px);background-size:90px 90px;animation:gridmove 5s linear infinite;transform:perspective(900px) rotateX(18deg)}
+@keyframes gridmove{to{background-position:0 90px}}
+.pt{position:absolute;border-radius:50%;background:#fff;animation:rise linear infinite}
+@keyframes rise{from{transform:translateY(0)}to{transform:translateY(-2200px)}}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;mix-blend-mode:overlay}
+#vign{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.65));pointer-events:none}
+
+/* header */
+.topchip{position:absolute;top:120px;left:70px;font-size:34px;font-weight:800;letter-spacing:4px;padding:14px 28px;border-radius:50px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);display:flex;gap:14px;align-items:center}
+.live{width:18px;height:18px;border-radius:50%;background:#ef4444;box-shadow:0 0 18px #ef4444;animation:blinkL 1s steps(1) infinite}
+@keyframes blinkL{50%{opacity:.25}}
+
+/* scenes */
+.scene{position:absolute;inset:0;opacity:0;animation:sIn .6s cubic-bezier(.2,.8,.2,1) both,sOut .4s ease-in forwards;animation-delay:calc(var(--s)*1s),calc((var(--s) + var(--d) - .4)*1s)}
+@keyframes sIn{from{opacity:0;transform:translateY(80px) scale(1.08);filter:blur(14px)}to{opacity:1;transform:none;filter:none}}
+@keyframes sOut{from{opacity:1}to{opacity:0;transform:translateY(-60px) scale(.94);filter:blur(10px)}}
+.cam{position:absolute;inset:0}
+.wrap{position:absolute;left:70px;right:70px;top:330px;bottom:430px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.it{animation:pop .7s cubic-bezier(.2,.9,.3,1.35) both;animation-delay:calc((var(--s) + var(--o,.1))*1s)}
+@keyframes pop{from{opacity:0;transform:translateY(70px) scale(.85)}to{opacity:1;transform:none}}
+.it.fromL{animation-name:fromL}.it.fromR{animation-name:fromR}.it.zoom{animation-name:zoom}.it.drop{animation-name:drop}.it.flip{animation-name:flip;animation-duration:.9s}.it.stamp{animation-name:stamp;animation-duration:.5s}
+@keyframes fromL{from{opacity:0;transform:translateX(-700px) rotate(-6deg)}to{opacity:1;transform:none}}
+@keyframes fromR{from{opacity:0;transform:translateX(700px) rotate(6deg)}to{opacity:1;transform:none}}
+@keyframes zoom{from{opacity:0;transform:scale(2.6);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes drop{0%{opacity:0;transform:translateY(-500px)}60%{opacity:1;transform:translateY(30px)}80%{transform:translateY(-12px)}100%{transform:none}}
+@keyframes flip{from{opacity:0;transform:perspective(900px) rotateX(-95deg)}to{opacity:1;transform:none}}
+@keyframes stamp{0%{opacity:0;transform:scale(3) rotate(-25deg)}70%{opacity:1;transform:scale(.9) rotate(-8deg)}100%{opacity:1;transform:rotate(-8deg)}}
+
+.tag{display:inline-block;font-size:38px;font-weight:800;letter-spacing:6px;text-transform:uppercase;color:#67e8f9;background:rgba(103,232,249,.1);border:2px solid rgba(103,232,249,.45);padding:14px 34px;border-radius:60px}
+.big{font-size:240px;font-weight:900;letter-spacing:-6px;line-height:1;background:linear-gradient(90deg,#a78bfa,#22d3ee,#f472b6,#a78bfa);background-size:300% 100%;-webkit-background-clip:text;color:transparent;animation:zoom .8s cubic-bezier(.2,.9,.3,1.2) both,shine 3s linear infinite;animation-delay:calc((var(--s) + var(--o))*1s),0s;filter:drop-shadow(0 0 40px rgba(167,139,250,.6))}
 @keyframes shine{to{background-position:300% 0}}
-h1{font-size:96px;font-weight:900;line-height:1.05;letter-spacing:-2px}
-h2{font-size:72px;font-weight:800;line-height:1.1}
-p.lead{font-size:50px;font-weight:500;color:#cbd5e1;line-height:1.35}
+h1{font-size:92px;font-weight:900;line-height:1.05;letter-spacing:-2px}
+h2{font-size:70px;font-weight:900;line-height:1.1}
+.lead{font-size:50px;font-weight:600;color:#e2e8f0;line-height:1.3}
 .grad{background:linear-gradient(90deg,#a78bfa,#22d3ee);-webkit-background-clip:text;color:transparent}
-.bot{width:420px;height:420px;border-radius:50%;display:grid;place-items:center;font-size:230px;
- background:radial-gradient(circle at 35% 30%,#312e81,#0b1020 70%);box-shadow:0 0 0 6px rgba(167,139,250,.6),0 0 120px rgba(124,58,237,.8),inset 0 0 80px rgba(34,211,238,.35);position:relative}
-.ring{position:absolute;inset:-40px;border-radius:50%;border:4px dashed rgba(34,211,238,.55);animation:spin 12s linear infinite}
-.ring.r2{inset:-80px;border:3px dotted rgba(244,114,182,.5);animation-duration:20s;animation-direction:reverse}
-@keyframes spin{to{transform:rotate(360deg)}}
-.pulse{animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{50%{transform:scale(1.05)}}
-.card{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.14);border-radius:44px;padding:44px 50px;backdrop-filter:blur(10px);text-align:left;width:920px}
-.date{font-size:150px;font-weight:900;line-height:1}
-.agent{display:flex;gap:36px;align-items:center;width:920px;text-align:left;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);border-left:12px solid var(--c);border-radius:36px;padding:34px 40px;margin-top:30px}
-.agent .ic{font-size:96px;flex:none;width:130px;height:130px;display:grid;place-items:center;border-radius:30px;background:rgba(255,255,255,.08)}
-.agent b{display:block;font-size:50px;font-weight:800;margin-bottom:8px}
-.agent span{font-size:38px;color:#cbd5e1;line-height:1.3}
-.head{display:flex;flex-direction:column;align-items:center;gap:22px;margin-bottom:30px}
-.head .emo{font-size:170px;line-height:1}
-.head h2{color:var(--c)}
-.flow{display:flex;align-items:flex-start;gap:20px;font-size:36px;color:#94a3b8;margin-top:36px;width:920px;text-align:left;background:rgba(0,0,0,.35);border-radius:28px;padding:26px 34px;border:2px dashed rgba(255,255,255,.18)}
-.flow em{font-style:normal;color:#fff;font-weight:700}
-.tree{position:relative;width:960px;height:1000px;margin-top:20px}
-.node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:10px}
-.node .c{width:210px;height:210px;border-radius:50%;display:grid;place-items:center;font-size:110px;background:rgba(255,255,255,.07);border:5px solid var(--c);box-shadow:0 0 60px var(--c)}
-.node b{font-size:42px;font-weight:800}
-.node.main .c{width:280px;height:280px;font-size:150px}
+.gold{background:linear-gradient(90deg,#fde68a,#f59e0b,#fde68a);background-size:200% 100%;-webkit-background-clip:text;color:transparent;animation:shine 2.5s linear infinite}
+
+/* avatar */
+#ava{position:absolute;left:0;top:0;width:400px;height:470px;transform-origin:50% 50%;z-index:20}
+#ava svg{width:100%;height:100%;overflow:visible}
+#avaWaves{position:absolute;left:50%;top:44%;width:0;height:0}
+#avaWaves i{position:absolute;left:-230px;top:-230px;width:460px;height:460px;border-radius:50%;border:6px solid rgba(34,211,238,.7);opacity:0}
+
+/* captions */
+#cap{position:absolute;left:60px;right:60px;top:1500px;height:260px;display:flex;align-items:center;justify-content:center;z-index:30}
+#capIn{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;padding:20px 34px;border-radius:30px;background:rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.1);max-width:960px}
+#capIn span{font-size:60px;font-weight:900;line-height:1.15;text-shadow:0 4px 0 #000,0 0 18px rgba(0,0,0,.8);display:inline-block}
+#capIn span.on{color:#facc15}
+.bar{position:absolute;left:0;bottom:0;height:14px;width:100%;background:linear-gradient(90deg,#7c3aed,#22d3ee,#f472b6);transform-origin:left;z-index:40}
+
+/* born */
+.cal{width:380px;border-radius:40px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(124,58,237,.5);background:#fff;color:#111}
+.cal .m{background:linear-gradient(90deg,#7c3aed,#06b6d4);color:#fff;font-size:46px;font-weight:900;padding:18px;letter-spacing:6px}
+.cal .d{font-size:200px;font-weight:900;line-height:1;padding:10px 0 0}
+.cal .y{font-size:40px;font-weight:800;color:#64748b;padding-bottom:20px}
+.photo{position:relative;width:900px;height:496px;border-radius:40px;overflow:hidden;border:5px solid rgba(167,139,250,.9);box-shadow:0 0 80px rgba(124,58,237,.7)}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scan{position:absolute;left:0;right:0;height:120px;background:linear-gradient(transparent,rgba(34,211,238,.45),transparent);animation:scan 2.2s ease-in-out infinite alternate}
+@keyframes scan{from{top:-120px}to{top:100%}}
+.hud{position:absolute;width:70px;height:70px;border:6px solid #22d3ee}
+.hud.a{left:20px;top:20px;border-right:0;border-bottom:0}.hud.b{right:20px;top:20px;border-left:0;border-bottom:0}.hud.c{left:20px;bottom:20px;border-right:0;border-top:0}.hud.d{right:20px;bottom:20px;border-left:0;border-top:0}
+.badge{position:absolute;right:30px;bottom:30px;font-size:34px;font-weight:900;padding:10px 24px;border-radius:14px;background:#22c55e;color:#04210f;letter-spacing:2px}
+.kb{animation:kb 9s ease-in-out both;animation-delay:calc(var(--s)*1s)}
+@keyframes kb{from{transform:scale(1.05) translate(4%,2%)}to{transform:scale(1.5) translate(-14%,4%)}}
+
+/* builder */
+.bgphoto{position:absolute;inset:-80px;background:url(assets/aditya.jpg) center/cover;filter:blur(30px) brightness(.45) saturate(1.4);animation:kb2 9s linear both;animation-delay:calc(var(--s)*1s)}
+@keyframes kb2{from{transform:scale(1.1)}to{transform:scale(1.35)}}
+.chips{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;max-width:940px}
+.chip{font-size:44px;font-weight:800;padding:16px 30px;border-radius:50px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25)}
+
+/* tree */
+.tree{position:absolute;left:0;top:0;width:1080px;height:1920px}
 .tree svg{position:absolute;inset:0}
-.tree line{stroke:rgba(255,255,255,.35);stroke-width:5;stroke-dasharray:14 12;animation:dash 1s linear infinite}
-@keyframes dash{to{stroke-dashoffset:-26}}
-.step{display:flex;align-items:center;gap:34px;width:920px;text-align:left;margin-top:26px;background:rgba(255,255,255,.06);border-radius:34px;padding:30px 38px;border:2px solid rgba(255,255,255,.12)}
-.step .n{flex:none;width:100px;height:100px;border-radius:50%;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(135deg,#7c3aed,#06b6d4)}
-.step span{font-size:42px;line-height:1.3}
-.arrow{font-size:50px;color:#67e8f9;margin-top:8px;height:40px}
-.bar{position:absolute;left:0;bottom:0;height:14px;background:linear-gradient(90deg,#7c3aed,#22d3ee,#f472b6);width:100%;transform-origin:left;animation:prog 78.5s linear both}
-@keyframes prog{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.wm{position:absolute;top:70px;left:0;right:0;text-align:center;font-size:34px;font-weight:700;letter-spacing:8px;color:rgba(255,255,255,.55)}
-.typing::after{content:"▍";animation:blink 1s steps(1) infinite;color:#22d3ee}
-@keyframes blink{50%{opacity:0}}
+.tree line{stroke:rgba(255,255,255,.4);stroke-width:6;stroke-dasharray:16 12;animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-28}}
+.tree line.it{animation:fadeL .6s both,dash 1s linear infinite;animation-delay:calc((var(--s) + var(--o,.1))*1s),0s}
+@keyframes fadeL{from{opacity:0}to{opacity:1}}
+.node{position:absolute;width:0;height:0}
+.node .in{position:absolute;left:-110px;top:-110px;width:220px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.node .c{width:200px;height:200px;border-radius:50%;display:grid;place-items:center;font-size:104px;background:rgba(10,10,30,.8);border:6px solid var(--c);box-shadow:0 0 60px var(--c),inset 0 0 40px var(--c)}
+.node b{font-size:42px;font-weight:900;text-shadow:0 3px 0 #000}
+.coreRing{position:absolute;left:540px;top:1030px;width:0;height:0}
+.coreRing i{position:absolute;left:-190px;top:-190px;width:380px;height:380px;border-radius:50%;border:5px dashed rgba(167,139,250,.8);animation:spin 10s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dot{position:absolute;width:26px;height:26px;margin:-13px;border-radius:50%;background:#fff;box-shadow:0 0 24px #fff,0 0 50px var(--c)}
+
+/* business */
+.bhead{display:flex;align-items:center;gap:30px;margin-bottom:26px}
+.bhead .emo{font-size:130px;line-height:1;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-14px) rotate(-6deg)}}
+.bhead h2{color:var(--c);text-shadow:0 0 30px var(--c)}
+.agent{display:flex;gap:30px;align-items:center;width:940px;text-align:left;background:rgba(15,18,40,.75);border:3px solid rgba(255,255,255,.12);border-left:14px solid var(--c);border-radius:34px;padding:26px 34px;margin-top:22px;position:relative}
+.agent .ic{font-size:84px;flex:none;width:120px;height:120px;display:grid;place-items:center;border-radius:28px;background:rgba(255,255,255,.08)}
+.agent b{display:block;font-size:46px;font-weight:900;margin-bottom:6px}
+.agent span{font-size:34px;color:#cbd5e1;line-height:1.3}
+.agent .st{position:absolute;right:26px;top:22px;font-size:24px;font-weight:900;letter-spacing:2px;color:#22c55e;display:flex;gap:8px;align-items:center}
+.agent .st:before{content:"";width:14px;height:14px;border-radius:50%;background:#22c55e;box-shadow:0 0 12px #22c55e}
+.flow{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:34px;padding:22px 30px;border-radius:30px;background:rgba(0,0,0,.4);border:2px dashed rgba(255,255,255,.22)}
+.flow .f{font-size:62px;width:104px;height:104px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.07);border:4px solid rgba(255,255,255,.15)}
+.flow .ar{font-size:40px;color:#64748b;font-weight:900}
+.flow .lbl{font-size:30px;color:#94a3b8;font-weight:700;margin-left:12px;text-align:left;max-width:260px;line-height:1.25}
+
+/* projects */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:28px;width:940px;margin-top:34px}
+.pc{border-radius:36px;padding:30px;background:rgba(15,18,40,.8);border:3px solid rgba(255,255,255,.14);display:flex;flex-direction:column;align-items:center;gap:14px;height:330px;justify-content:center;position:relative;overflow:hidden}
+.pc .pi{width:150px;height:150px;border-radius:34px;display:grid;place-items:center;font-size:96px}
+.pc b{font-size:40px;font-weight:900;line-height:1.1}
+.pc span{font-size:28px;color:#94a3b8;font-weight:600}
+.pc img{width:150px;height:150px;border-radius:34px;animation:bob 1.2s ease-in-out infinite}
+.gear{animation:spin 4s linear infinite;display:inline-block;font-family:'Noto Color Emoji';font-size:96px;line-height:1}
+.claude{font-size:56px;font-weight:900;display:flex;gap:16px;align-items:center;justify-content:center}
+.claude .star{color:#d97757;font-size:80px;display:inline-block;animation:spin 6s linear infinite}
+
+/* how */
+.step{display:flex;align-items:center;gap:30px;width:900px;text-align:left;background:rgba(15,18,40,.8);border-radius:32px;padding:24px 34px;border:3px solid rgba(255,255,255,.12)}
+.step .n{flex:none;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:50px;font-weight:900;background:linear-gradient(135deg,#7c3aed,#06b6d4)}
+.step span{font-size:46px;font-weight:700}
+.step em{font-style:normal;font-size:70px;margin-left:auto}
+.arrow{font-size:46px;color:#67e8f9;height:56px;line-height:56px}
+
+/* outro */
+.follow{margin-top:34px;font-size:52px;font-weight:900;padding:26px 60px;border-radius:70px;background:linear-gradient(90deg,#ef4444,#ec4899);box-shadow:0 0 60px rgba(236,72,153,.7);position:relative}
+.hand{position:absolute;right:-50px;bottom:-70px;font-size:100px;animation:tap 1s ease-in-out infinite}
+@keyframes tap{50%{transform:translate(-14px,-14px) scale(.9)}}
+.byline{display:flex;align-items:center;gap:22px;margin-top:34px;font-size:36px;font-weight:700;color:#cbd5e1}
+.byline img{width:110px;height:110px;border-radius:50%;object-fit:cover;object-position:78% 30%;border:4px solid #facc15;box-shadow:0 0 30px rgba(250,204,21,.6)}
 </style></head><body>
-<div class="bg"></div><div class="grid"></div>
-<div class="orb" style="width:500px;height:500px;background:#7c3aed;left:-100px;top:300px"></div>
-<div class="orb" style="width:420px;height:420px;background:#06b6d4;right:-80px;bottom:300px;animation-delay:-4s"></div>
-<div class="wm">LYANS • AI AGENT</div>
+<div id="stage">
+ <div class="bg" id="bg"></div><div class="grid"></div>
+ <div id="pts"></div>
+ <div class="topchip"><span class="live"></span>LYANS<span style="color:#67e8f9">.AI</span></div>
 
-<!-- 1. HOOK 0-6 -->
-<section class="scene" style="--s:0;--d:6">
-  <div class="tag it" style="--o:.1">🤖 AI Agent Utama</div>
-  <div class="bot it pulse" style="--o:.4;margin:110px 0 90px"><div class="ring"></div><div class="ring r2"></div>🤖</div>
-  <p class="lead it" style="--o:.9">Kenalin, ini</p>
-  <div class="big" style="--o:1.2">LYANS</div>
-  <p class="lead it" style="--o:2">Otak dari semua agen AI<br>di bisnis kami 🧠⚡</p>
-</section>
+ <!-- 1 HOOK -->
+ <section class="scene" data-scene="hook"><div class="cam">
+  <div class="wrap" style="top:1000px;bottom:420px;justify-content:flex-start">
+   <div class="lead it" data-seg="0">Halo semuanya! 👋</div>
+   <div class="big" data-seg="1" style="margin-top:6px">LYANS</div>
+   <div class="tag it zoom" data-seg="2" style="margin-top:12px">🤖 AI Agent Utama</div>
+  </div></div></section>
 
-<!-- 2. LAHIR 6-13 -->
-<section class="scene" style="--s:6;--d:7">
-  <div class="tag it" style="--o:.1">📅 Hari Lahir</div>
-  <div class="date grad it" style="--o:.4;margin-top:60px">25</div>
-  <h1 class="it" style="--o:.6">OKTOBER 2026</h1>
-  <div class="card it" style="--o:1.4;margin-top:90px;text-align:center">
-    <p class="lead">Diciptakan oleh</p>
-    <h2 style="margin-top:16px">👨‍💻 Aditya Edwin<br><span class="grad">Brilliansyah</span></h2>
-    <p class="lead" style="margin-top:16px;font-size:40px">— The Boss 👑</p>
+ <!-- 2 BORN -->
+ <section class="scene" data-scene="born"><div class="cam"><div class="wrap" style="justify-content:flex-start;top:300px">
+   <div style="display:flex;gap:40px;align-items:center">
+    <div class="cal it flip" data-seg="0"><div class="m">OKTOBER</div><div class="d">25</div><div class="y">2026</div></div>
+    <div style="text-align:left"><div class="tag it" data-seg="0" style="--x:.2">📅 Hari Lahir</div><div class="lead it" data-seg="0" style="margin-top:20px;font-size:46px">Lahirnya<br><b class="grad" style="font-size:64px">LYANS 🤖</b></div></div>
+   </div>
+   <div class="lead it" data-seg="1" style="margin-top:40px">Diciptakan oleh</div>
+   <div class="photo it zoom" data-seg="1" style="margin-top:20px"><img class="kb" src="assets/aditya.jpg"><div class="scan"></div><i class="hud a"></i><i class="hud b"></i><i class="hud c"></i><i class="hud d"></i>
+     <div class="badge it stamp" data-seg="2">✓ CREATOR</div></div>
+  </div></div></section>
+
+ <!-- 3 BUILDER -->
+ <section class="scene" data-scene="builder"><div class="bgphoto"></div><div class="cam"><div class="wrap">
+   <div class="it drop" data-seg="0" style="font-size:44px;font-weight:800;color:#facc15">👑 THE BOSS</div>
+   <h1 class="it" data-seg="0" style="margin-top:14px">Aditya Edwin<br><span class="gold">Brilliansyah</span></h1>
+   <div class="photo it zoom" data-seg="0" style="margin-top:36px;width:820px;height:452px;border-color:#facc15;box-shadow:0 0 80px rgba(250,204,21,.5)"><img src="assets/aditya.jpg" style="animation:kb 8s ease-in-out both;animation-delay:calc(var(--s)*1s)"></div>
+   <div class="chips" style="margin-top:36px">
+    <div class="chip it fromL" data-seg="1">🧺 Laundry</div><div class="chip it fromR" data-seg="1" style="--x:.15">🏠 Kos</div><div class="chip it fromL" data-seg="1" style="--x:.3">🍜 FnB</div><div class="chip it zoom" data-seg="1" style="--x:.6;background:linear-gradient(90deg,#7c3aed,#ec4899)">🚀 Web3</div>
+   </div>
+  </div></div></section>
+
+ <!-- 4 TREE -->
+ <section class="scene" data-scene="tree"><div class="cam">
+  <div class="wrap" style="top:280px;bottom:auto;height:260px"><div class="tag it" data-seg="0">⏱️ Baru 1 Minggu</div><h1 class="it" data-seg="0" style="margin-top:20px;font-size:80px">Lahir <span class="grad">banyak agen</span> baru!</h1></div>
+  <div class="tree" id="tree"><svg id="treeSvg" viewBox="0 0 1080 1920"></svg><div class="coreRing"><i></i></div></div>
+ </div></section>
+
+ <!-- business scenes injected here -->
+ <div id="biz"></div>
+
+ <!-- PROJECTS -->
+ <section class="scene" data-scene="projects"><div class="cam"><div class="wrap">
+   <div class="claude it zoom" data-seg="0"><span class="star">✳</span><span>Built with <span style="color:#d97757">Claude</span></span></div>
+   <div class="lead it" data-seg="0" style="font-size:40px;margin-top:10px;color:#94a3b8">Project yang sudah dibuat 🛠️</div>
+   <div class="pgrid">
+    <div class="pc it fromL" data-seg="1" style="border-color:#facc15"><img src="assets/pip.png"><b>Pip Sing-Along</b><span>Channel YouTube lagu anak 🎵</span></div>
+    <div class="pc it fromR" data-seg="2" style="border-color:#ef4444"><div class="pi" style="background:rgba(239,68,68,.15)">📤</div><b>Pip Kids Uploader</b><span>Auto-upload via YouTube API</span></div>
+    <div class="pc it fromL" data-seg="3" style="border-color:#22d3ee"><div class="pi" style="background:rgba(34,211,238,.15)"><span class="gear">⚙️</span></div><b>CLS Engine</b><span>Engine &amp; deployment</span></div>
+    <div class="pc it fromR" data-seg="4" style="border-color:#a78bfa"><div class="pi" style="background:rgba(167,139,250,.15)">🎬</div><b>Video Lyans</b><span>Yang kamu tonton ini! 😎</span></div>
+   </div>
+  </div></div></section>
+
+ <!-- HOW -->
+ <section class="scene" data-scene="how"><div class="cam"><div class="wrap" style="justify-content:flex-start;top:320px">
+   <div class="tag it" data-seg="0">🧠 Cara Kerja Lyans</div>
+   <div style="margin-top:34px;display:flex;flex-direction:column;align-items:center" id="steps">
+    <div class="step it fromL" data-seg="1"><div class="n">1</div><span>Pesan masuk</span><em>📩</em></div><div class="arrow it" data-seg="2">▼</div>
+    <div class="step it fromR" data-seg="2"><div class="n">2</div><span>Lyans memahami</span><em>🧠</em></div><div class="arrow it" data-seg="3">▼</div>
+    <div class="step it fromL" data-seg="3"><div class="n">3</div><span>Kirim ke agen tepat</span><em>⚡</em></div><div class="arrow it" data-seg="4">▼</div>
+    <div class="step it fromR" data-seg="4"><div class="n">4</div><span>Lapor ke Bos Aditya</span><em>👑</em></div>
+   </div>
+  </div></div></section>
+
+ <!-- OUTRO -->
+ <section class="scene" data-scene="outro"><div class="cam"><div class="wrap" style="top:860px;bottom:430px;justify-content:flex-start">
+   <h1 class="it zoom" data-seg="0" style="font-size:80px">1 Otak. <span class="grad">Banyak Agen.</span><br>Kerja Nonstop 🚀</h1>
+   <div class="follow it drop" data-seg="1">➕ FOLLOW<span class="hand">👆</span></div>
+   <div class="byline it" data-seg="0" style="--x:.8"><img src="assets/aditya.jpg"><div style="text-align:left">Created by<br><b style="color:#facc15">Aditya Edwin Brilliansyah</b></div></div>
   </div>
-</section>
+  <div class="wrap" style="top:auto;bottom:240px;height:0;overflow:visible"></div>
+ </div></section>
 
-<!-- 3. TIM 13-21 -->
-<section class="scene" style="--s:13;--d:8;justify-content:flex-start;padding-top:200px">
-  <div class="tag it" style="--o:.1">⏱️ Baru 1 Minggu</div>
-  <h1 class="it" style="--o:.3;margin-top:40px">Sudah lahir <span class="grad">banyak agen</span> baru!</h1>
-  <div class="tree">
-    <svg viewBox="0 0 960 1000"><line x1="480" y1="480" x2="480" y2="130"/><line x1="480" y1="480" x2="175" y2="400"/><line x1="480" y1="480" x2="785" y2="400"/><line x1="480" y1="480" x2="250" y2="830"/><line x1="480" y1="480" x2="710" y2="830"/></svg>
-    <div class="node main it" style="--o:.6;--c:#a78bfa;left:480px;top:480px"><div class="c">🤖</div><b>LYANS</b></div>
-    <div class="node it" style="--o:1.2;--c:#38bdf8;left:175px;top:400px"><div class="c">🧺</div><b>Laundry</b></div>
-    <div class="node it" style="--o:1.5;--c:#34d399;left:480px;top:130px"><div class="c">🏠</div><b>Kos-kosan</b></div>
-    <div class="node it" style="--o:1.8;--c:#fb923c;left:785px;top:400px"><div class="c">🍜</div><b>FnB</b></div>
-    <div class="node it" style="--o:2.1;--c:#f472b6;left:710px;top:830px"><div class="c">🪙</div><b>Web3</b></div>
-    <div class="node it" style="--o:2.4;--c:#ef4444;left:250px;top:830px"><div class="c">▶️</div><b>YouTube</b></div>
-  </div>
-</section>
+ <!-- AVATAR -->
+ <div id="ava"><div id="avaWaves"><i></i><i></i><i></i></div>
+ <svg viewBox="0 0 400 470">
+  <defs>
+   <linearGradient id="gH" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+   <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d28d9"/><stop offset="1" stop-color="#0e7490"/></linearGradient>
+   <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g id="aBody">
+   <g id="armL" transform="translate(95 360)"><rect x="-22" y="-10" width="30" height="90" rx="15" fill="url(#gB)" transform="rotate(25)"/></g>
+   <g id="armR" transform="translate(305 360)"><g id="armRr"><rect x="-8" y="-10" width="30" height="90" rx="15" fill="url(#gB)" transform="rotate(-25)"/><circle cx="18" cy="88" r="20" fill="#22d3ee" transform="rotate(-25)"/></g></g>
+   <rect x="110" y="320" width="180" height="130" rx="50" fill="url(#gB)"/>
+   <circle id="core" cx="200" cy="385" r="26" fill="#22d3ee" filter="url(#glow)"/>
+  </g>
+  <g id="aHead">
+   <line x1="200" y1="60" x2="200" y2="20" stroke="#a78bfa" stroke-width="8" stroke-linecap="round"/>
+   <circle id="ant" cx="200" cy="16" r="16" fill="#f472b6" filter="url(#glow)"/>
+   <rect x="40" y="60" width="320" height="260" rx="90" fill="url(#gH)"/>
+   <rect x="64" y="86" width="272" height="208" rx="70" fill="#0b1020"/>
+   <rect x="22" y="160" width="26" height="70" rx="12" fill="#7c3aed"/><rect x="352" y="160" width="26" height="70" rx="12" fill="#7c3aed"/>
+   <g id="eyes" filter="url(#glow)">
+    <rect id="eL" x="118" y="140" width="46" height="62" rx="23" fill="#67e8f9"/>
+    <rect id="eR" x="236" y="140" width="46" height="62" rx="23" fill="#67e8f9"/>
+   </g>
+   <circle cx="110" cy="235" r="16" fill="#f472b6" opacity=".55"/><circle cx="290" cy="235" r="16" fill="#f472b6" opacity=".55"/>
+   <rect id="mouth" x="170" y="236" width="60" height="12" rx="6" fill="#67e8f9" filter="url(#glow)"/>
+  </g>
+ </svg></div>
 
-<!-- 4. LAUNDRY 21-30 -->
-<section class="scene" style="--s:21;--d:9;--c:#38bdf8">
-  <div class="head it" style="--o:.1"><div class="emo">🧺</div><h2>Bisnis Laundry</h2></div>
-  <div class="agent it" style="--o:.6"><div class="ic">📲</div><div><b>Agen Order</b><span>Terima pesanan via WhatsApp, hitung berat &amp; harga otomatis</span></div></div>
-  <div class="agent it" style="--o:1.1"><div class="ic">🛵</div><div><b>Agen Antar-Jemput</b><span>Atur jadwal pickup &amp; delivery ke kurir</span></div></div>
-  <div class="agent it" style="--o:1.6"><div class="ic">🔔</div><div><b>Agen Notifikasi</b><span>Kabari pelanggan saat cucian sudah siap</span></div></div>
-  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> chat masuk → order dicatat → kurir dijadwalkan → pelanggan dikabari</div></div>
-</section>
+ <div id="flash"></div><div id="vign"></div>
+ <div id="cap"><div id="capIn"></div></div>
+ <div class="bar" id="bar"></div>
+</div>
+<script>
+const TL = window.TL, SC = {}; TL.scenes.forEach(s => SC[s.name] = s);
+// ---------- business scenes ----------
+const BIZ = [
+ {k:"laundry",e:"🧺",c:"#38bdf8",t:"Bisnis Laundry",a:[["📲","Agen Order","Terima pesanan WhatsApp, hitung berat & harga"],["🛵","Agen Antar-Jemput","Jadwalkan pickup & delivery kurir"],["🔔","Agen Notifikasi","Kabari pelanggan saat cucian siap"]],f:["💬","🤖","🛵","✅"],l:"Chat → order → kurir → selesai"},
+ {k:"kos",e:"🏠",c:"#34d399",t:"Bisnis Kos-kosan",a:[["🛏️","Agen Booking","Jawab calon penghuni & cek kamar kosong"],["💸","Agen Tagihan","Ingatkan jatuh tempo & catat pembayaran"],["🛠️","Agen Maintenance","Terima komplain & teruskan ke teknisi"]],f:["🙋","🤖","🧾","✅"],l:"Chat → cek data → tagihan/tiket"},
+ {k:"fnb",e:"🍜",c:"#fb923c",t:"Bisnis FnB",a:[["🧾","Agen Kasir","Terima order online & teruskan ke dapur"],["📦","Agen Stok","Pantau bahan baku & alert sebelum habis"],["📊","Agen Laporan","Rekap omzet & menu terlaris harian"]],f:["🛒","🤖","👨‍🍳","📊"],l:"Order → dapur → stok → laporan"},
+ {k:"web3",e:"🪙",c:"#f472b6",t:"Bisnis Web3",a:[["📈","Agen Market Monitor","Pantau harga token & on-chain 24/7"],["👛","Agen Wallet Alert","Lapor setiap transaksi masuk/keluar"],["💬","Agen Komunitas","Jaga grup Telegram & Discord"]],f:["⛓️","🤖","🚨","👑"],l:"On-chain → analisa → alert Bos"},
+ {k:"youtube",e:"▶️",c:"#ef4444",t:"Channel YouTube",a:[["💡","Agen Ide & Script","Riset tren, konsep & tulis script"],["🚀","Agen Upload & SEO","Judul, deskripsi, tag & jadwal tayang"],["📊","Agen Analitik","Pantau views, subscriber & performa"]],f:["💡","🎬","📤","📈"],l:"Ide → video → upload → analisa"},
+];
+const bizEl = document.getElementById('biz');
+BIZ.forEach(b => {
+  const s = document.createElement('section'); s.className = 'scene'; s.dataset.scene = b.k; s.style.setProperty('--c', b.c);
+  s.innerHTML = `<div class="cam"><div class="wrap" style="justify-content:flex-start;top:310px">
+   <div class="bhead it zoom" data-seg="0"><div class="emo">${b.e}</div><h2>${b.t}</h2></div>
+   ${b.a.map((a,i)=>`<div class="agent it ${i%2?'fromR':'fromL'}" data-seg="${i+1}"><div class="ic">${a[0]}</div><div><b>${a[1]}</b><span>${a[2]}</span></div><div class="st">ONLINE</div></div>`).join('')}
+   <div class="flow it" data-seg="3" style="--x:.9">${b.f.map((f,i)=>`<div class="f">${f}</div>${i<3?'<div class="ar">➜</div>':''}`).join('')}<div class="lbl">⚙️ ${b.l}</div></div>
+  </div></div>`;
+  bizEl.appendChild(s);
+});
+// ---------- tree ----------
+const TC = [540, 1030], NODES = [["🧺","Laundry","#38bdf8",-150],["🏠","Kos-kosan","#34d399",-90],["🍜","FnB","#fb923c",-30],["🪙","Web3","#f472b6",30+180-60],["▶️","YouTube","#ef4444",150]];
+// place 5 nodes around center
+const ang = [-162,-90,-18,54,126], R = 400;
+const treeEl = document.getElementById('tree'), svg = document.getElementById('treeSvg'); const nodePos = [];
+NODES.forEach((n,i) => {
+  const a = ang[i]*Math.PI/180, x = TC[0] + Math.cos(a)*R*1.05, y = TC[1] + Math.sin(a)*R; nodePos.push([x,y]);
+  svg.insertAdjacentHTML('beforeend', `<line class="it" data-seg="${i+1}" x1="${TC[0]}" y1="${TC[1]}" x2="${x}" y2="${y}"/>`);
+  treeEl.insertAdjacentHTML('beforeend', `<div class="node" style="left:${x}px;top:${y}px;--c:${n[2]}"><div class="in it zoom" data-seg="${i+1}"><div class="c">${n[0]}</div><b>${n[1]}</b></div></div><div class="dot" id="dot${i}" style="--c:${n[2]};opacity:0"></div>`);
+});
+// ---------- particles ----------
+const pts = document.getElementById('pts'); let seed = 3; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+for (let i = 0; i < 60; i++) { const s = 3 + rnd()*7, d = 8 + rnd()*14;
+  pts.insertAdjacentHTML('beforeend', `<i class="pt" style="left:${rnd()*1080}px;top:${1950 + rnd()*200}px;width:${s}px;height:${s}px;opacity:${.2+rnd()*.5};animation-duration:${d}s;animation-delay:-${rnd()*d}s;background:${['#fff','#67e8f9','#c4b5fd','#f9a8d4'][i%4]}"></i>`); }
+// ---------- timing vars ----------
+document.querySelectorAll('.scene').forEach(el => {
+  const s = SC[el.dataset.scene]; el.style.setProperty('--s', s.s); el.style.setProperty('--d', s.d);
+  el.querySelectorAll('[data-seg]').forEach(it => { const g = s.segs[+it.dataset.seg]; const x = parseFloat(it.style.getPropertyValue('--x')) || 0; it.style.setProperty('--o', (g.t - s.s + x).toFixed(3)); });
+});
+document.getElementById('bar').style.animation = `prog ${TL.total}s linear both`;
+document.head.insertAdjacentHTML('beforeend', '<style>@keyframes prog{from{transform:scaleX(0)}to{transform:scaleX(1)}}</style>');
 
-<!-- 5. KOS 30-39 -->
-<section class="scene" style="--s:30;--d:9;--c:#34d399">
-  <div class="head it" style="--o:.1"><div class="emo">🏠</div><h2>Bisnis Kos-kosan</h2></div>
-  <div class="agent it" style="--o:.6"><div class="ic">🛏️</div><div><b>Agen Booking</b><span>Jawab calon penghuni &amp; cek kamar yang masih kosong</span></div></div>
-  <div class="agent it" style="--o:1.1"><div class="ic">💸</div><div><b>Agen Tagihan</b><span>Ingatkan jatuh tempo sewa &amp; catat pembayaran</span></div></div>
-  <div class="agent it" style="--o:1.6"><div class="ic">🛠️</div><div><b>Agen Maintenance</b><span>Terima komplain (AC, air, WiFi) &amp; teruskan ke teknisi</span></div></div>
-  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> penghuni chat → agen cek data kamar → tagihan / tiket dibuat otomatis</div></div>
-</section>
-
-<!-- 6. FNB 39-48 -->
-<section class="scene" style="--s:39;--d:9;--c:#fb923c">
-  <div class="head it" style="--o:.1"><div class="emo">🍜</div><h2>Bisnis FnB</h2></div>
-  <div class="agent it" style="--o:.6"><div class="ic">🧾</div><div><b>Agen Kasir &amp; Order</b><span>Terima pesanan online &amp; teruskan ke dapur</span></div></div>
-  <div class="agent it" style="--o:1.1"><div class="ic">📦</div><div><b>Agen Stok</b><span>Pantau bahan baku &amp; kasih alert sebelum habis</span></div></div>
-  <div class="agent it" style="--o:1.6"><div class="ic">📊</div><div><b>Agen Laporan</b><span>Rekap omzet &amp; menu terlaris setiap hari</span></div></div>
-  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> order masuk → stok berkurang otomatis → laporan harian dikirim ke Bos</div></div>
-</section>
-
-<!-- 7. WEB3 48-57 -->
-<section class="scene" style="--s:48;--d:9;--c:#f472b6">
-  <div class="head it" style="--o:.1"><div class="emo">🪙</div><h2>Bisnis Web3</h2></div>
-  <div class="agent it" style="--o:.6"><div class="ic">📈</div><div><b>Agen Market Monitor</b><span>Pantau harga token &amp; data on-chain 24/7</span></div></div>
-  <div class="agent it" style="--o:1.1"><div class="ic">👛</div><div><b>Agen Wallet Alert</b><span>Lapor setiap transaksi masuk/keluar di wallet</span></div></div>
-  <div class="agent it" style="--o:1.6"><div class="ic">💬</div><div><b>Agen Komunitas</b><span>Jawab pertanyaan &amp; moderasi grup Telegram/Discord</span></div></div>
-  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> data on-chain dibaca → ada pergerakan penting → alert langsung ke Bos</div></div>
-</section>
-
-<!-- 8. YOUTUBE 57-66 -->
-<section class="scene" style="--s:57;--d:9;--c:#ef4444">
-  <div class="head it" style="--o:.1"><div class="emo">▶️</div><h2>Channel YouTube</h2></div>
-  <div class="agent it" style="--o:.6"><div class="ic">💡</div><div><b>Agen Ide &amp; Script</b><span>Riset tren, bikin ide konten &amp; tulis script/lirik</span></div></div>
-  <div class="agent it" style="--o:1.1"><div class="ic">🚀</div><div><b>Agen Upload &amp; SEO</b><span>Upload video, atur judul, deskripsi, tag &amp; thumbnail</span></div></div>
-  <div class="agent it" style="--o:1.6"><div class="ic">📊</div><div><b>Agen Analitik</b><span>Pantau views, subscriber &amp; video yang paling perform</span></div></div>
-  <div class="flow it" style="--o:2.4">⚙️ <div><em>Cara kerja:</em> ide dipilih → video jadi → diupload terjadwal → performa dilaporkan ke Bos</div></div>
-</section>
-
-<!-- 9. CARA KERJA 66-74 -->
-<section class="scene" style="--s:66;--d:8">
-  <div class="tag it" style="--o:.1">🧠 Cara Kerja Lyans</div>
-  <div class="step it" style="--o:.5"><div class="n">1</div><span>Pesan / data masuk dari pelanggan atau sistem</span></div>
-  <div class="arrow it" style="--o:.8">▼</div>
-  <div class="step it" style="--o:1.1"><div class="n">2</div><span><b>Lyans</b> membaca &amp; memahami kebutuhannya</span></div>
-  <div class="arrow it" style="--o:1.4">▼</div>
-  <div class="step it" style="--o:1.7"><div class="n">3</div><span>Tugas diarahkan ke <b>agen spesialis</b> yang tepat</span></div>
-  <div class="arrow it" style="--o:2">▼</div>
-  <div class="step it" style="--o:2.3"><div class="n">4</div><span>Agen eksekusi &amp; lapor hasilnya ke <b>Bos Aditya</b> 👑</span></div>
-</section>
-
-<!-- 10. OUTRO 74-78.5 -->
-<section class="scene" style="--s:74;--d:4.5">
-  <div class="bot it pulse" style="--o:.1;width:300px;height:300px;font-size:160px;margin-bottom:80px"><div class="ring"></div>🤖</div>
-  <h1 class="it" style="--o:.4">1 Otak.<br><span class="grad">Banyak Agen.</span><br>Kerja 24/7 🚀</h1>
-  <p class="lead it typing" style="--o:1.2;margin-top:60px">Follow untuk lihat agen berikutnya</p>
-</section>
-
-<div class="bar"></div>
+// ---------- per-frame render ----------
+const $ = id => document.getElementById(id);
+const POSE = { hook:[540,650,1.25], outro:[540,560,1.0], tree:[540,1015,.62], def:[930,215,.4] };
+const ease = x => x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
+function sceneAt(t){ let cur = TL.scenes[0]; for (const s of TL.scenes) if (t >= s.s) cur = s; return cur; }
+function poseOf(name){ return POSE[name] || POSE.def; }
+const capIn = $('capIn'); let capKey = '';
+window.render = function(t){
+  const f = Math.min(TL.level.length-1, Math.floor(t*TL.fps)), lv = TL.level[f] || 0;
+  const sc = sceneAt(t), idx = TL.scenes.indexOf(sc), prev = TL.scenes[idx-1];
+  // avatar pose
+  let p = poseOf(sc.name);
+  if (prev) { const k = ease(Math.min(1, (t - sc.s + .35)/.8)); const q = poseOf(prev.name); p = q.map((v,i)=> v + (p[i]-v)*k); }
+  const bob = Math.sin(t*2.4)*10, tilt = Math.sin(t*1.3)*4 + lv*3*Math.sin(t*9);
+  $('ava').style.transform = `translate(${p[0]-200}px,${p[1]-235+bob}px) scale(${p[2]}) rotate(${tilt}deg)`;
+  // mouth / eyes / antenna
+  const mh = 12 + lv*46; const m = $('mouth'); m.setAttribute('height', mh); m.setAttribute('y', 242 - mh/2); m.setAttribute('width', 60 + lv*24); m.setAttribute('x', 170 - lv*12);
+  const bp = t % 3.7, blink = bp < .14 ? Math.abs(Math.cos(bp/.14*Math.PI)) : 1, look = Math.sin(t*.9)*10;
+  ['eL','eR'].forEach((id,i)=>{ const e=$(id), h=62*Math.max(.08,blink); e.setAttribute('height',h); e.setAttribute('y',171-h/2); e.setAttribute('x',(i?236:118)+look); });
+  $('ant').setAttribute('r', 14 + lv*10); $('core').setAttribute('r', 22 + lv*12);
+  const wave = (sc.name==='outro'||sc.name==='hook') ? Math.sin(t*7)*35 - 40 : Math.sin(t*2)*8;
+  $('armRr').setAttribute('transform', `rotate(${wave})`);
+  $('avaWaves').querySelectorAll('i').forEach((w,i)=>{ const ph = ((t*1.2 + i/3) % 1); w.style.opacity = (lv>.08 ? (1-ph)*.8*Math.min(1,lv*2) : 0); w.style.transform = `scale(${.75+ph*.6})`; });
+  // beat pulse + flash + cam zoom
+  const beat = 60/TL.bpm, bph = t > TL.drop ? ((t-TL.drop) % beat)/beat : 1, pulse = Math.exp(-bph*5)*(t>TL.drop?1:0);
+  $('bg').style.transform = `scale(${1+pulse*.04})`; $('bg').style.filter = `brightness(${1+pulse*.35})`;
+  const since = t - sc.s; $('flash').style.opacity = idx>0 ? Math.max(0, .55*(1-since/.3)) : Math.max(0, .9*(1-(t-TL.drop)/.3))*(t>=TL.drop?1:0);
+  document.querySelectorAll('.scene').forEach(el=>{ const s = SC[el.dataset.scene]; const k = (t - s.s)/s.d; if (k>=0&&k<=1) el.firstElementChild.style.transform = `scale(${1+k*.045})`; });
+  // tree data dots
+  if (sc.name==='tree') nodePos.forEach((np,i)=>{ const d=$('dot'+i), st=sc.segs[i+1].t+.4; if (t<st){d.style.opacity=0;return;} const ph=((t-st)*.8+i*.2)%1; d.style.opacity=1; d.style.left=(TC[0]+(np[0]-TC[0])*ph)+'px'; d.style.top=(TC[1]+(np[1]-TC[1])*ph)+'px'; });
+  // business: active agent glow + flow light
+  const bz = BIZ.find(b=>b.k===sc.name);
+  if (bz) { const el = document.querySelector(`.scene[data-scene="${bz.k}"]`);
+    el.querySelectorAll('.agent').forEach((a,i)=>{ const g = sc.segs[i+1], on = t>=g.t && t<g.t+g.d+.2; a.style.boxShadow = on ? `0 0 0 4px ${bz.c},0 0 60px ${bz.c}` : 'none'; a.style.background = on ? 'rgba(40,40,80,.9)' : ''; });
+    const fs = sc.segs[3].t + 1.2; el.querySelectorAll('.flow .f').forEach((n,i)=>{ const on = t>fs && Math.floor((t-fs)*2.5)%5 === i; n.style.borderColor = on ? bz.c : ''; n.style.boxShadow = on ? `0 0 40px ${bz.c}` : 'none'; n.style.transform = on ? 'scale(1.18)' : 'none'; }); }
+  if (sc.name==='how') document.querySelectorAll('#steps .step').forEach((s,i)=>{ const g=sc.segs[i+1], on=t>=g.t&&t<g.t+g.d+.25; s.style.boxShadow= on?'0 0 0 4px #22d3ee,0 0 60px #22d3ee':'none'; s.style.transform=on?'scale(1.04)':''; });
+  // captions (word-by-word)
+  let seg = null; for (const s of TL.scenes) for (const g of s.segs) if (t >= g.t - .05 && t < g.t + g.d + .3) seg = g;
+  const key = seg ? seg.cap : '';
+  if (key !== capKey) { capIn.innerHTML = seg ? seg.words.map(w=>`<span>${w}</span>`).join('') : ''; capKey = key; }
+  $('cap').style.opacity = seg ? 1 : 0;
+  if (seg) capIn.querySelectorAll('span').forEach((s,i)=>{ const wt = seg.wt[i], dt = t - wt; s.style.opacity = dt < 0 ? .3 : 1; const nxt = seg.wt[i+1] ?? (seg.t+seg.d); const on = t>=wt && t<nxt; s.className = on ? 'on' : ''; s.style.transform = dt<0 ? 'scale(1)' : on ? `scale(${1.12 + Math.max(0,.15-dt)})` : 'scale(1)'; });
+};
+window.READY = true;
+</script>
 </body></html>
