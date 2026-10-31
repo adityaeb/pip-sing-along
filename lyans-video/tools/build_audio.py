@@ -36,9 +36,14 @@ try:
 except Exception as e:
     print("Edge TTS tidak tersedia:", type(e).__name__, "-> tanpa narasi (durasi diperkirakan)")
 
+CACHE = os.path.join(os.path.dirname(__file__), ".tts_cache"); os.makedirs(CACHE, exist_ok=True)
 def speak(text):
+    import hashlib
+    fn = os.path.join(CACHE, hashlib.md5((VOICE + RATE + text).encode()).hexdigest() + ".mp3")
+    if os.path.exists(fn): return trim(decode_mp3(open(fn, "rb").read()))
     if ENGINE == "edge":
-        return trim(decode_mp3(asyncio.run(_tts(text))))
+        b = asyncio.run(_tts(text)); open(fn, "wb").write(b)
+        return trim(decode_mp3(b))
     return None
 
 # ---------- narasi + timeline ----------
@@ -64,47 +69,17 @@ for st, a in clips:
 if clips:
     voice = voice / (np.abs(voice).max() + 1e-9) * 0.95
 
-# ---------- musik lo-fi (D minor, 88 bpm) ----------
+# ---------- musik (lihat tools/music.py) ----------
+from music import make_music
 rng = np.random.default_rng(11)
-BPM = 88; beat = 60 / BPM; bar = beat * 4
-def note(m): return 440 * 2 ** ((m - 69) / 12)
+drop = scenes[0]["segs"][0]["t"]
+BPM = 100
 def env(n, a=0.005, r=0.3):
     x = np.arange(n) / SR; return np.minimum(1, x / a) * np.exp(-x / r)
-music = np.zeros(N, np.float32)
-def add(sig, at, buf=music):
+def add(sig, at, buf):
     i = int(at * SR); j = min(N, i + len(sig))
     if 0 <= i < N: buf[i:j] += sig[:j - i]
-prog = [(50, [62, 65, 69, 72]), (46, [62, 65, 70, 74]), (43, [62, 67, 70, 74]), (45, [61, 64, 69, 72])]  # Dm9 Bbmaj7 Gm7 A7
-drop = scenes[0]["segs"][0]["t"]
-for b in range(int(TOTAL / beat) + 1):
-    at = b * beat; root, ch = prog[int(at // bar) % 4]; full = drop <= at < TOTAL - 2
-    if full and b % 4 in (0, 2) or (full and b % 8 == 7):
-        n = int(0.4 * SR); x = np.arange(n) / SR
-        add(np.sin(2 * np.pi * (48 * x + 70 * 0.05 * (1 - np.exp(-x / 0.05)))) * np.exp(-x / 0.2) * 0.8, at + (beat / 2 if b % 8 == 7 else 0))
-    if full and b % 2 == 1:  # snare
-        n = int(0.25 * SR); nz = rng.standard_normal(n); nz = np.convolve(np.diff(np.concatenate([[0], nz])), np.ones(3) / 3, 'same')
-        x = np.arange(n) / SR; add((nz * 0.5 + np.sin(2 * np.pi * 190 * x)) * env(n, 0.001, 0.07) * 0.22, at)
-    for h in range(2):  # swung hats
-        n = int(0.04 * SR); hn = np.diff(np.concatenate([[0], rng.standard_normal(n)]))
-        add(hn * env(n, 0.001, 0.01) * (0.045 if h else 0.03), at + (beat * 0.6 if h else 0))
-    if full and b % 2 == 0:  # bass
-        n = int(beat * 1.8 * SR); x = np.arange(n) / SR; f = note(root - 12)
-        add((np.sin(2 * np.pi * f * x) + 0.3 * np.sin(4 * np.pi * f * x)) * env(n, 0.01, 0.6) * 0.3, at)
-# rhodes-like chords + melody plucks
-for c in range(int(TOTAL / bar) + 1):
-    root, ch = prog[c % 4]; n = int(bar * SR); x = np.arange(n) / SR; sig = np.zeros(n)
-    for m in ch:
-        f = note(m - 12); sig += (np.sin(2 * np.pi * f * x) + 0.25 * np.sin(4 * np.pi * f * x) * np.exp(-x / 0.3)) * np.exp(-x / 2.2)
-    sig *= (1 + 0.15 * np.sin(2 * np.pi * 4.5 * x)) * np.minimum(1, x / 0.02)
-    add(sig * 0.05, c * bar)
-    for q, st in enumerate([0, 1.5, 2.5, 3]):
-        m = ch[(c + q) % 4] + (12 if q == 3 else 0); nn = int(0.5 * SR); xx = np.arange(nn) / SR
-        add(np.sin(2 * np.pi * note(m) * xx) * np.exp(-xx / 0.25) * 0.06 * (1 if c * bar >= drop else 0.6), c * bar + st * beat)
-# vinyl crackle
-cr = np.zeros(N, np.float32); idx = rng.integers(0, N, int(TOTAL * 25)); cr[idx] = rng.standard_normal(len(idx)) * 0.08
-music += np.convolve(cr, [1, .5, .25], 'same') + rng.standard_normal(N).astype(np.float32) * 0.002
-# lowpass music a bit (lo-fi)
-k = 5; music = np.convolve(music, np.ones(k) / k, 'same').astype(np.float32)
+music2 = np.zeros((N, 2), np.float32); m = make_music(TOTAL, drop, SR); music2[:len(m)] = m
 
 # ---------- SFX ----------
 sfx = np.zeros(N, np.float32)
@@ -133,15 +108,14 @@ typing(SC["claude"]["s"] + 0.3, 2.5)
 # ---------- mix ----------
 if clips:
     venv = np.convolve(np.abs(voice), np.ones(2205) / 2205, 'same'); venv = np.minimum(1, venv / (venv.max() * 0.25))
-    duck = 1 - 0.6 * np.convolve(venv, np.ones(6615) / 6615, 'same')
-    mus_g = 0.5
+    duck = 1 - 0.5 * np.convolve(venv, np.ones(6615) / 6615, 'same')
+    mus_g = 0.42
 else:
     duck = np.ones(N, np.float32); mus_g = 0.75
 tt = np.arange(N) / SR
 fade = np.clip(np.minimum(tt / 0.3, (TOTAL - tt) / 1.8), 0, 1)
-mix = (music * mus_g * duck + sfx * 0.55) * fade + voice * 0.8
-mix = mix[:int(TOTAL * SR)]; mix = mix / np.abs(mix).max() * 0.95
-st = np.stack([mix, mix], 1)
+mix = music2 * (mus_g * duck)[:, None] + ((sfx * 0.45) * fade + voice * 0.8)[:, None]
+st = mix[:int(TOTAL * SR)]; st = st / np.abs(st).max() * 0.95
 with wave.open(os.path.join(OUT, "audio.wav"), "wb") as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes((st * 32767).astype("<i2").tobytes())
 
