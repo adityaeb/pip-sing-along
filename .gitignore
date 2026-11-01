@@ -10,3 +10,6 @@ crypto-video/tools/__pycache__/
 ledger-video/audio.wav
 ledger-video/tools/.tts_cache/
 ledger-video/tools/__pycache__/
+unboxing-video/work/
+unboxing-video/*.mp4
+unboxing-video/src/
