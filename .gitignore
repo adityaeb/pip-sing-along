@@ -4,3 +4,6 @@ lyans-video/tools/.tts_cache/
 nexar-video/audio.wav
 nexar-video/tools/.tts_cache/
 nexar-video/tools/__pycache__/
+crypto-video/audio.wav
+crypto-video/tools/.tts_cache/
+crypto-video/tools/__pycache__/
