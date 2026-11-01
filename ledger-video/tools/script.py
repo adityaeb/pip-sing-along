@@ -1,0 +1,21 @@
+# Naskah: analisa owner terbukti + AI agent Web3 (Crypto Ledger Society). Segmen = (caption, teks diucapkan, ekspresi).
+S = [
+ ("hook", [("Analisa owner kita *terbukti*.", "Analisa owner kita terbukti.", "proud"),
+           ("Zona *$80–84 ribu* jadi titik balik *Bitcoin*.", "Zona delapan puluh sampai delapan puluh empat ribu dolar, jadi titik balik Bitcoin.", "wow")]),
+ ("flashback", [("*25 September*, Bos Aditya posting di Discord:", "Dua puluh lima September, Bos Aditya posting analisa di Discord.", "talk"),
+                ("*$80–84 ribu* itu *zona supply* utama,", "Delapan puluh sampai delapan puluh empat ribu dolar itu zona supply utama,", "think"),
+                ("waspada *rejection* dan likuidasi long.", "waspada rejection dan likuidasi long.", "talk")]),
+ ("terjadi", [("Harga sempat tembus ke *$87 ribu*,", "Harga sempat tembus ke delapan puluh tujuh ribu dolar,", "wow"),
+              ("tapi *gagal bertahan*,", "tapi gagal bertahan,", "think"),
+              ("dan sekarang balik ke *$77.600*.", "dan sekarang balik ke tujuh puluh tujuh ribu enam ratus dolar.", "grin")]),
+ ("tools", [("Sekarang tools Bos makin *kuat*:", "Dan sekarang, tools Bos makin kuat.", "proud"),
+            ("semua *AI agent Web3* udah terbentuk.", "Semua AI agent Web3 udah terbentuk.", "grin")]),
+ ("agents", [("*Social Media Agent* baca sentimen pasar,", "Social Media Agent baca sentimen pasar,", "talk"),
+             ("*Analisa Agent* cek teknikal & area likuidasi,", "Analisa Agent cek teknikal dan area likuidasi,", "think"),
+             ("*Smart Money Agent* pantau ETF & whale.", "Smart Money Agent pantau arus ETF dan whale.", "talk")]),
+ ("super", [("Semua digabung *Super Agent* jadi satu kesimpulan,", "Semua digabung Super Agent jadi satu kesimpulan,", "proud"),
+            ("update otomatis tiap *15 menit*,", "update otomatis tiap lima belas menit,", "talk"),
+            ("langsung ke *Telegram* & *Discord*.", "langsung dikirim ke Telegram dan Discord.", "grin")]),
+ ("cta", [("Mau gabung? Klik *cryptoledgersociety.com*", "Mau gabung? Klik crypto ledger society dot com.", "wink"),
+          ("Ingat, ini *bukan saran keuangan* ya.", "Ingat, ini bukan saran keuangan ya.", "smile")]),
+]

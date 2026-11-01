@@ -7,3 +7,6 @@ nexar-video/tools/__pycache__/
 crypto-video/audio.wav
 crypto-video/tools/.tts_cache/
 crypto-video/tools/__pycache__/
+ledger-video/audio.wav
+ledger-video/tools/.tts_cache/
+ledger-video/tools/__pycache__/
